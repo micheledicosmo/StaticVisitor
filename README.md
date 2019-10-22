@@ -33,10 +33,10 @@ will populate `list` with the types
 ### Custom type filtering example
 The following code
 ```
-var visitor = new Tools.DataStructure.StaticVisitor(out var list, new Tools.DataStructure.StaticVisitorConfiguration()
+var visitor = new Sid.Tools.StaticVisitor.StaticVisitor(out var list, new Tools.DataStructure.StaticVisitorConfiguration()
    {
       TypeCanBeVisited = x =>
-         Tools.DataStructure.StaticVisitorConfiguration.DefaultTypeCanBeVisited(x)
+         Sid.Tools.StaticVisitor.StaticVisitorConfiguration.DefaultTypeCanBeVisited(x)
          && !x.IsValueType
    });
 ```
