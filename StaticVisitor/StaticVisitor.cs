@@ -3,6 +3,9 @@ using System.Linq;
 
 namespace Sid.Tools.StaticVisitor
 {
+    /// <summary>
+    /// Simple container for <see cref="StaticVisitor"/> configuration parameters
+    /// </summary>
     public class StaticVisitorConfiguration
     {
         /// <summary>
@@ -50,50 +53,84 @@ namespace Sid.Tools.StaticVisitor
         public bool VisitAssignableTypes { get; set; } = false;
     }
 
+    /// <summary>
+    /// A customizable visitor for static data structures
+    /// </summary>
     public class StaticVisitor
     {
         public Action<Type> Action { get; }
 
         private readonly StaticVisitorConfiguration configuration;
 
-        public StaticVisitor(out System.Collections.Generic.ICollection<Type> list)
+        /// <summary>
+        /// Creates a new instance of <see cref="StaticVisitor"/>
+        /// </summary>
+        /// <param name="collection">The collection to which visited types will be added</param>
+        public StaticVisitor(out System.Collections.Generic.ICollection<Type> collection)
         {
-            list = new System.Collections.Generic.List<Type>();
-            Action = list.Add;
+            collection = new System.Collections.Generic.List<Type>();
+            Action = collection.Add;
             configuration = new StaticVisitorConfiguration();
         }
 
-        public StaticVisitor(out System.Collections.Generic.ICollection<Type> list, StaticVisitorConfiguration configuration)
+        /// <summary>
+        /// Creates a new instance of <see cref="StaticVisitor"/>
+        /// </summary>
+        /// <param name="collection">The collection to which visited types will be added</param>
+        /// <param name="configuration">The custom configuration which defines the visitor behaviour</param>
+        public StaticVisitor(out System.Collections.Generic.ICollection<Type> collection, StaticVisitorConfiguration configuration)
         {
-            list = new System.Collections.Generic.List<Type>();
-            Action = list.Add;
+            collection = new System.Collections.Generic.List<Type>();
+            Action = collection.Add;
             this.configuration = configuration;
         }
 
-        public StaticVisitor(System.Collections.Generic.ICollection<Type> list)
+        /// <summary>
+        /// Creates a new instance of <see cref="StaticVisitor"/>
+        /// </summary>
+        /// <param name="collection">The collection to which visited types will be added</param>
+        public StaticVisitor(System.Collections.Generic.ICollection<Type> collection)
         {
-            Action = list.Add;
+            Action = collection.Add;
             configuration = new StaticVisitorConfiguration();
         }
 
-        public StaticVisitor(System.Collections.Generic.ICollection<Type> list, StaticVisitorConfiguration configuration)
+        /// <summary>
+        /// Creates a new instance of <see cref="StaticVisitor"/>
+        /// </summary>
+        /// <param name="collection">The collection to which visited types will be added</param>
+        /// <param name="configuration">The custom configuration which defines the visitor behaviour</param>
+        public StaticVisitor(System.Collections.Generic.ICollection<Type> collection, StaticVisitorConfiguration configuration)
         {
-            Action = list.Add;
+            Action = collection.Add;
             this.configuration = configuration;
         }
 
+        /// <summary>
+        /// Creates a new instance of <see cref="StaticVisitor"/>
+        /// </summary>
+        /// <param name="action">The action to be invoked when a type is visited</param>
         public StaticVisitor(Action<Type> action)
         {
             Action = action;
             configuration = new StaticVisitorConfiguration();
         }
 
+        /// <summary>
+        /// Creates a new instance of <see cref="StaticVisitor"/>
+        /// </summary>
+        /// <param name="action">The action to be invoked when a type is visited</param>
+        /// <param name="configuration">The custom configuration which defines the visitor behaviour</param>
         public StaticVisitor(Action<Type> action, StaticVisitorConfiguration configuration)
         {
             Action = action;
             this.configuration = configuration;
         }
 
+        /// <summary>
+        /// Starts visiting the type
+        /// </summary>
+        /// <param name="type"></param>
         public void Visit(Type type)
         {
             VisitInternal(type, new System.Collections.Generic.HashSet<Type>());
@@ -182,6 +219,12 @@ namespace Sid.Tools.StaticVisitor
                 .Where(type.IsAssignableFrom);
         }
 
+        /// <summary>
+        /// Wrapes <paramref name="item"/> in an <see cref="System.Collections.Generic.IEnumerable<typeparamref name="T"/>"/>
+        /// </summary>
+        /// <typeparam name="T">The type of the item to be wrapped</typeparam>
+        /// <param name="item">The item to be wrapped</param>
+        /// <returns></returns>
         public static System.Collections.Generic.IEnumerable<T> ToEnumerable<T>(this T item)
         {
             if (item == null)
