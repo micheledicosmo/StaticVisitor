@@ -14,5 +14,22 @@
     <RootNamespace>Sid.Tools.StaticVisitor.Core</RootNamespace>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageId>SidToolsStaticVisitorCore</PackageId>
+    <Version>0.1.0</Version>
+    <AssemblyVersion>0.1.0.0</AssemblyVersion>
+    <Company>Michele Di Cosmo</Company>
+    <Authors>Michele Di Cosmo</Authors>
+    <Product>Sid Tools StaticVisitor Core</Product>
+    <Copyright>Michele Di Cosmo</Copyright>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <RepositoryUrl>https://github.com/micheledicosmo/StaticVisitor</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/micheledicosmo/StaticVisitor</PackageProjectUrl>
+    <Description>A customizable data structure static visitor for C#</Description>
   </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
 </Project>
