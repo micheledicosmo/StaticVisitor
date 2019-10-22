@@ -1,6 +1,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Sid.Tools.StaticVisitor.Core.Tests
+namespace Sid.Tools.StaticVisitor.Tests
 {
     [TestClass]
     public class Basic

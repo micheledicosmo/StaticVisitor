@@ -1,35 +1,29 @@
-﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="Current">
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
-    <OldToolsVersion>2.0</OldToolsVersion>
-    <UpgradeBackupLocation />
-    <ProjectGuid>{91BCE98E-9D21-4B63-8BDA-97A00E98C145}</ProjectGuid>
-  </PropertyGroup>
-  <PropertyGroup>
-    <AssemblyName>SidToolsStaticVisitorCore</AssemblyName>
-  </PropertyGroup>
-  <PropertyGroup>
-    <RootNamespace>Sid.Tools.StaticVisitor.Core</RootNamespace>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>Sid.Tools.StaticVisitor</RootNamespace>
+    <AssemblyName>SidToolsStaticVisitor</AssemblyName>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <PackageId>SidToolsStaticVisitorCore</PackageId>
-    <Version>0.1.0</Version>
-    <AssemblyVersion>0.1.0.0</AssemblyVersion>
-    <Company>Michele Di Cosmo</Company>
+    <PackageId>SidToolsStaticVisitor</PackageId>
+    <Version>0.2.0</Version>
+    <AssemblyVersion>0.2.0.0</AssemblyVersion>
+    <FileVersion>0.2.0.0</FileVersion>
     <Authors>Michele Di Cosmo</Authors>
-    <Product>Sid Tools StaticVisitor Core</Product>
-    <Copyright>Michele Di Cosmo</Copyright>
+    <Company>Michele Di Cosmo</Company>
+    <Product>Data structure static visitor</Product>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <RepositoryUrl>https://github.com/micheledicosmo/StaticVisitor</RepositoryUrl>
     <PackageProjectUrl>https://github.com/micheledicosmo/StaticVisitor</PackageProjectUrl>
     <Description>A customizable data structure static visitor for C#</Description>
+    <Copyright>Michele Di Cosmo</Copyright>
   </PropertyGroup>
+
   <ItemGroup>
     <None Include="..\LICENSE">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
   </ItemGroup>
+
 </Project>

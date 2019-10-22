@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace Sid.Tools.StaticVisitor.Core
+namespace Sid.Tools.StaticVisitor
 {
     public class StaticVisitorConfiguration
     {
