@@ -31,7 +31,7 @@ namespace Tools.DataStructure
         /// Indicates whether types should be visited only once, no matter if they appear multiple times in the data structure. By default multiple visits are disabled (defaults to <c>true</c>).
         /// </summary>
         public bool AvoidMultipleVisits { get; set; } = true;
-        
+
         /// <summary>
         /// Indicates whether the type and interfaces that a type directly inherits should be visited. By default inherited types are visited (defaults to <c>true</c>).
         /// </summary>
@@ -56,7 +56,7 @@ namespace Tools.DataStructure
         public Action<Type> Action { get; }
 
         private readonly StaticVisitorConfiguration configuration;
-        
+
         public StaticVisitor(out System.Collections.Generic.ICollection<Type> list)
         {
             list = new System.Collections.Generic.List<Type>();
@@ -109,25 +109,25 @@ namespace Tools.DataStructure
 
             if (!configuration.TypeCanBeVisited(type))
                 return;
-            
+
             if (configuration.VisitInheritedTypes)
                 foreach (var inheritedType in type.GetInheritedTypes())
                     VisitInternal(inheritedType, visitedSet);
 
             if (configuration.VisitEncompassingTypes)
-                foreach(var encompassingType in type.GetEncompassingTypes())
+                foreach (var encompassingType in type.GetEncompassingTypes())
                     VisitInternal(encompassingType, visitedSet);
-            
+
             Action(type);
 
             if (configuration.VisitAssignableTypes)
             {
                 var assignableTypes = type.GetAssignableTypes(AppDomain.CurrentDomain);
-                foreach(var assignableType in assignableTypes)
+                foreach (var assignableType in assignableTypes)
                     VisitInternal(assignableType, visitedSet);
             }
 
-            foreach(var propertyType in
+            foreach (var propertyType in
                 type
                     .GetProperties()
                     .Where(x => configuration.PropertyCanBeVisited(x))
@@ -150,7 +150,7 @@ namespace Tools.DataStructure
             var interfaces = type.GetInterfaces();
             return baseType.Concat(interfaces);
         }
-        
+
         /// <summary>
         /// Returns a named tuple with the given <paramref name="type"/> and its encompassing types (i.e. parameter types of generic types, and element type).
         /// </summary>

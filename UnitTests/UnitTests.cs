@@ -33,7 +33,7 @@ namespace Tools.DataStructure.UnitTests
             visitor.Visit(typeof(DataStructure));
             Assert.IsTrue(configurationCalled);
         }
-        
+
         [TestMethod]
         public void CollectionCtorOk()
         {
@@ -61,7 +61,7 @@ namespace Tools.DataStructure.UnitTests
             visitor.Visit(typeof(DataStructure));
             Assert.IsTrue(configurationCalled);
         }
-        
+
         [TestMethod]
         public void ActionCtorOk()
         {
@@ -227,7 +227,7 @@ namespace Tools.DataStructure.UnitTests
             Assert.IsTrue(actual.Contains(typeof(GenericType<EncompassedType>)));
             Assert.IsTrue(actual.Contains(typeof(EncompassedType)));
         }
-        
+
         [TestMethod]
         public void ElementTypeOk()
         {
