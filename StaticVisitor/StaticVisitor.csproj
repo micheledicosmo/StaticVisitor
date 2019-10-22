@@ -5,10 +5,10 @@
     <RootNamespace>Sid.Tools.StaticVisitor</RootNamespace>
     <AssemblyName>SidToolsStaticVisitor</AssemblyName>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageId>SidToolsStaticVisitor</PackageId>
-    <Version>0.2.0</Version>
-    <AssemblyVersion>0.2.0.0</AssemblyVersion>
-    <FileVersion>0.2.0.0</FileVersion>
+    <PackageId>Sid.Tools.StaticVisitor</PackageId>
+    <Version>1.1.0</Version>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <FileVersion>1.1.0.0</FileVersion>
     <Authors>Michele Di Cosmo</Authors>
     <Company>Michele Di Cosmo</Company>
     <Product>Data structure static visitor</Product>
