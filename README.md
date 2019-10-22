@@ -4,7 +4,7 @@ A customizable data structure static visitor for C#.
 This package, released under MIT license, allows to visit static data structures easily in C#. Static visit means that it's the types of the data structure that get visited, not the instances.
 
 ## Usages
-The basic usage is to create an instance of `Sid.Tools.StaticVisitor.Core.StaticVisitor` and pass an `IList<Action>` that will collect the results of the visit, then invoke the `Visit` method.
+The basic usage is to create an instance of `Sid.Tools.StaticVisitor.StaticVisitor` and pass an `IList<Action>` that will collect the results of the visit, then invoke the `Visit` method.
 
 Overloads for more advanced behaviour also exist, where you specify a custom `Action<Type>` which defines what custom action to execute upon visit.
 
