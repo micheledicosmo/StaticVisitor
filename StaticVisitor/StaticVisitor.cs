@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-// ReSharper disable once CheckNamespace
-namespace Tools.DataStructure
+namespace Sid.Tools.StaticVisitor.Core
 {
     public class StaticVisitorConfiguration
     {

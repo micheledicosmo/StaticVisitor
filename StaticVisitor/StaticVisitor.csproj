@@ -7,8 +7,8 @@
     <ProjectGuid>{613C3031-F202-4E26-AB10-67D74FE285D3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>StaticVisitor</RootNamespace>
-    <AssemblyName>StaticVisitor</AssemblyName>
+    <RootNamespace>Sid.Tools.StaticVisitor.Core</RootNamespace>
+    <AssemblyName>SidToolsStaticVisitorCore</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>

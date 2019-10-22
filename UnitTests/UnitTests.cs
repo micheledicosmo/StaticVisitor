@@ -1,7 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-// ReSharper disable once CheckNamespace
-namespace Tools.DataStructure.UnitTests
+namespace Sid.Tools.StaticVisitor.Core.Tests
 {
     [TestClass]
     public class Basic
@@ -11,7 +10,7 @@ namespace Tools.DataStructure.UnitTests
         [TestMethod]
         public void OutCtorOk()
         {
-            var visitor = new Tools.DataStructure.StaticVisitor(out var actual);
+            var visitor = new StaticVisitor(out var actual);
             visitor.Visit(typeof(DataStructure));
             Assert.IsTrue(actual.Count == 1);
             Assert.IsTrue(actual.Contains(typeof(DataStructure)));
@@ -21,7 +20,7 @@ namespace Tools.DataStructure.UnitTests
         public void OutCtorWithConfigurationOk()
         {
             var configurationCalled = false;
-            var configuration = new Tools.DataStructure.StaticVisitorConfiguration
+            var configuration = new StaticVisitorConfiguration
             {
                 TypeCanBeVisited = x =>
                 {
@@ -29,7 +28,7 @@ namespace Tools.DataStructure.UnitTests
                     return false;
                 }
             };
-            var visitor = new Tools.DataStructure.StaticVisitor(out var actual, configuration);
+            var visitor = new StaticVisitor(out var actual, configuration);
             visitor.Visit(typeof(DataStructure));
             Assert.IsTrue(configurationCalled);
         }
@@ -38,7 +37,7 @@ namespace Tools.DataStructure.UnitTests
         public void CollectionCtorOk()
         {
             var actual = new System.Collections.Generic.List<System.Type>();
-            var visitor = new Tools.DataStructure.StaticVisitor(actual);
+            var visitor = new StaticVisitor(actual);
             visitor.Visit(typeof(DataStructure));
             Assert.IsTrue(actual.Count == 1);
             Assert.IsTrue(actual.Contains(typeof(DataStructure)));
@@ -48,7 +47,7 @@ namespace Tools.DataStructure.UnitTests
         public void CollectionCtorWithConfigurationOk()
         {
             var configurationCalled = false;
-            var configuration = new Tools.DataStructure.StaticVisitorConfiguration
+            var configuration = new StaticVisitorConfiguration
             {
                 TypeCanBeVisited = x =>
                 {
@@ -57,7 +56,7 @@ namespace Tools.DataStructure.UnitTests
                 }
             };
             var actual = new System.Collections.Generic.List<System.Type>();
-            var visitor = new Tools.DataStructure.StaticVisitor(actual, configuration);
+            var visitor = new StaticVisitor(actual, configuration);
             visitor.Visit(typeof(DataStructure));
             Assert.IsTrue(configurationCalled);
         }
@@ -66,7 +65,7 @@ namespace Tools.DataStructure.UnitTests
         public void ActionCtorOk()
         {
             var actual = new System.Collections.Generic.List<System.Type>();
-            var visitor = new Tools.DataStructure.StaticVisitor(x => actual.Add(x));
+            var visitor = new StaticVisitor(x => actual.Add(x));
             visitor.Visit(typeof(DataStructure));
             Assert.IsTrue(actual.Count == 1);
             Assert.IsTrue(actual.Contains(typeof(DataStructure)));
@@ -76,7 +75,7 @@ namespace Tools.DataStructure.UnitTests
         public void ActionCtorWithConfigurationOk()
         {
             var configurationCalled = false;
-            var configuration = new Tools.DataStructure.StaticVisitorConfiguration
+            var configuration = new StaticVisitorConfiguration
             {
                 TypeCanBeVisited = x =>
                 {
@@ -85,7 +84,7 @@ namespace Tools.DataStructure.UnitTests
                 }
             };
             var actual = new System.Collections.Generic.List<System.Type>();
-            var visitor = new Tools.DataStructure.StaticVisitor(x => actual.Add(x), configuration);
+            var visitor = new StaticVisitor(x => actual.Add(x), configuration);
             visitor.Visit(typeof(DataStructure));
             Assert.IsTrue(configurationCalled);
         }
@@ -93,7 +92,7 @@ namespace Tools.DataStructure.UnitTests
         [TestMethod]
         public void TypeCanBeVisitedOk()
         {
-            var visitor = new Tools.DataStructure.StaticVisitor(out var actual, new Tools.DataStructure.StaticVisitorConfiguration()
+            var visitor = new StaticVisitor(out var actual, new StaticVisitorConfiguration()
             {
                 TypeCanBeVisited = x => true,
             });
@@ -117,7 +116,7 @@ namespace Tools.DataStructure.UnitTests
         [TestMethod]
         public void BasicOk()
         {
-            var visitor = new Tools.DataStructure.StaticVisitor(out var actual);
+            var visitor = new StaticVisitor(out var actual);
             visitor.Visit(typeof(DataStructure));
             Assert.IsTrue(actual.Count == 2);
             Assert.IsTrue(actual.Contains(typeof(DataStructure)));
@@ -127,7 +126,7 @@ namespace Tools.DataStructure.UnitTests
         [TestMethod]
         public void CustomFilterOk()
         {
-            var visitor = new Tools.DataStructure.StaticVisitor(out var actual, new Tools.DataStructure.StaticVisitorConfiguration()
+            var visitor = new StaticVisitor(out var actual, new StaticVisitorConfiguration()
             {
                 PropertyCanBeVisited = x => false
             });
@@ -147,7 +146,7 @@ namespace Tools.DataStructure.UnitTests
         [TestMethod]
         public void BasicOk()
         {
-            var visitor = new Tools.DataStructure.StaticVisitor(out var actual);
+            var visitor = new StaticVisitor(out var actual);
             visitor.Visit(typeof(DataStructureA));
             Assert.IsTrue(actual.Count == 2);
             Assert.IsTrue(actual.Contains(typeof(DataStructureA)));
@@ -157,7 +156,7 @@ namespace Tools.DataStructure.UnitTests
         [TestMethod]
         public void DisabledOk()
         {
-            var visitor = new Tools.DataStructure.StaticVisitor(out var actual, new Tools.DataStructure.StaticVisitorConfiguration()
+            var visitor = new StaticVisitor(out var actual, new StaticVisitorConfiguration()
             {
                 VisitInheritedTypes = false
             });
@@ -179,7 +178,7 @@ namespace Tools.DataStructure.UnitTests
         [TestMethod]
         public void BasicOk()
         {
-            var visitor = new Tools.DataStructure.StaticVisitor(out var actual);
+            var visitor = new StaticVisitor(out var actual);
             visitor.Visit(typeof(DataStructure));
             Assert.IsTrue(actual.Count == 4);
             Assert.IsTrue(actual.Contains(typeof(DataStructure)));
@@ -191,7 +190,7 @@ namespace Tools.DataStructure.UnitTests
         [TestMethod]
         public void AllowMultipleVisitsOk()
         {
-            var visitor = new Tools.DataStructure.StaticVisitor(out var actual, new Tools.DataStructure.StaticVisitorConfiguration()
+            var visitor = new StaticVisitor(out var actual, new StaticVisitorConfiguration()
             {
                 AvoidMultipleVisits = false
             });
@@ -218,7 +217,7 @@ namespace Tools.DataStructure.UnitTests
         [TestMethod]
         public void GenericTypeOk()
         {
-            var visitor = new Tools.DataStructure.StaticVisitor(out var actual, new Tools.DataStructure.StaticVisitorConfiguration()
+            var visitor = new StaticVisitor(out var actual, new StaticVisitorConfiguration()
             {
                 VisitInheritedTypes = false
             });
@@ -231,7 +230,7 @@ namespace Tools.DataStructure.UnitTests
         [TestMethod]
         public void ElementTypeOk()
         {
-            var visitor = new Tools.DataStructure.StaticVisitor(out var actual, new Tools.DataStructure.StaticVisitorConfiguration()
+            var visitor = new StaticVisitor(out var actual, new StaticVisitorConfiguration()
             {
                 VisitInheritedTypes = false
             });
@@ -244,7 +243,7 @@ namespace Tools.DataStructure.UnitTests
         [TestMethod]
         public void DisabledOk()
         {
-            var visitor = new Tools.DataStructure.StaticVisitor(out var actual, new Tools.DataStructure.StaticVisitorConfiguration()
+            var visitor = new StaticVisitor(out var actual, new StaticVisitorConfiguration()
             {
                 VisitInheritedTypes = false,
                 VisitEncompassingTypes = false
@@ -265,7 +264,7 @@ namespace Tools.DataStructure.UnitTests
         [TestMethod]
         public void BasicOk()
         {
-            var visitor = new Tools.DataStructure.StaticVisitor(out var actual, new Tools.DataStructure.StaticVisitorConfiguration()
+            var visitor = new StaticVisitor(out var actual, new StaticVisitorConfiguration()
             {
                 VisitAssignableTypes = true
             });
