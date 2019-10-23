@@ -66,7 +66,7 @@ namespace Sid.Tools.StaticVisitor
         /// Creates a new instance of <see cref="StaticVisitor"/>
         /// </summary>
         /// <param name="collection">The collection to which visited types will be added</param>
-        public StaticVisitor(out System.Collections.Generic.ICollection<Type> collection)
+        public StaticVisitor(out System.Collections.Generic.IList<Type> collection)
         {
             collection = new System.Collections.Generic.List<Type>();
             Action = collection.Add;
@@ -76,9 +76,9 @@ namespace Sid.Tools.StaticVisitor
         /// <summary>
         /// Creates a new instance of <see cref="StaticVisitor"/>
         /// </summary>
-        /// <param name="collection">The collection to which visited types will be added</param>
+        /// <param name="collection">The collection to which visited types will be added. Use an ordered collection to preserve order of visit</param>
         /// <param name="configuration">The custom configuration which defines the visitor behaviour</param>
-        public StaticVisitor(out System.Collections.Generic.ICollection<Type> collection, StaticVisitorConfiguration configuration)
+        public StaticVisitor(out System.Collections.Generic.IList<Type> collection, StaticVisitorConfiguration configuration)
         {
             collection = new System.Collections.Generic.List<Type>();
             Action = collection.Add;
@@ -88,7 +88,7 @@ namespace Sid.Tools.StaticVisitor
         /// <summary>
         /// Creates a new instance of <see cref="StaticVisitor"/>
         /// </summary>
-        /// <param name="collection">The collection to which visited types will be added</param>
+        /// <param name="collection">The collection to which visited types will be added. Use an ordered collection to preserve order of visit</param>
         public StaticVisitor(System.Collections.Generic.ICollection<Type> collection)
         {
             Action = collection.Add;
