@@ -146,6 +146,8 @@ namespace Sid.Tools.StaticVisitor
             if (!configuration.TypeCanBeVisited(type))
                 return;
 
+            Action(type);
+
             if (configuration.VisitInheritedTypes)
                 foreach (var inheritedType in type.GetInheritedTypes())
                     VisitInternal(inheritedType, visitedSet);
@@ -153,8 +155,6 @@ namespace Sid.Tools.StaticVisitor
             if (configuration.VisitEncompassingTypes)
                 foreach (var encompassingType in type.GetEncompassingTypes())
                     VisitInternal(encompassingType, visitedSet);
-
-            Action(type);
 
             if (configuration.VisitAssignableTypes)
             {

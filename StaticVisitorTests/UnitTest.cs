@@ -13,7 +13,7 @@ namespace Sid.Tools.StaticVisitor.Tests
             var visitor = new StaticVisitor(out var actual);
             visitor.Visit(typeof(DataStructure));
             Assert.IsTrue(actual.Count == 1);
-            Assert.IsTrue(actual.Contains(typeof(DataStructure)));
+            Assert.IsTrue(actual[0] == typeof(DataStructure));
         }
 
         [TestMethod]
@@ -40,7 +40,7 @@ namespace Sid.Tools.StaticVisitor.Tests
             var visitor = new StaticVisitor(actual);
             visitor.Visit(typeof(DataStructure));
             Assert.IsTrue(actual.Count == 1);
-            Assert.IsTrue(actual.Contains(typeof(DataStructure)));
+            Assert.IsTrue(actual[0] == typeof(DataStructure));
         }
 
         [TestMethod]
@@ -68,7 +68,7 @@ namespace Sid.Tools.StaticVisitor.Tests
             var visitor = new StaticVisitor(x => actual.Add(x));
             visitor.Visit(typeof(DataStructure));
             Assert.IsTrue(actual.Count == 1);
-            Assert.IsTrue(actual.Contains(typeof(DataStructure)));
+            Assert.IsTrue(actual[0] == typeof(DataStructure));
         }
 
         [TestMethod]
@@ -98,8 +98,8 @@ namespace Sid.Tools.StaticVisitor.Tests
             });
             visitor.Visit(typeof(DataStructure));
             Assert.IsTrue(actual.Count == 2);
-            Assert.IsTrue(actual.Contains(typeof(DataStructure)));
-            Assert.IsTrue(actual.Contains(typeof(object)));
+            Assert.IsTrue(actual[0] == typeof(DataStructure));
+            Assert.IsTrue(actual[1] == typeof(object));
         }
     }
 
@@ -119,8 +119,8 @@ namespace Sid.Tools.StaticVisitor.Tests
             var visitor = new StaticVisitor(out var actual);
             visitor.Visit(typeof(DataStructure));
             Assert.IsTrue(actual.Count == 2);
-            Assert.IsTrue(actual.Contains(typeof(DataStructure)));
-            Assert.IsTrue(actual.Contains(typeof(PropertyObject)));
+            Assert.IsTrue(actual[0] == typeof(DataStructure));
+            Assert.IsTrue(actual[1] == typeof(PropertyObject));
         }
 
         [TestMethod]
@@ -132,7 +132,7 @@ namespace Sid.Tools.StaticVisitor.Tests
             });
             visitor.Visit(typeof(DataStructure));
             Assert.IsTrue(actual.Count == 1);
-            Assert.IsTrue(actual.Contains(typeof(DataStructure)));
+            Assert.IsTrue(actual[0] == typeof(DataStructure));
         }
     }
 
@@ -149,8 +149,8 @@ namespace Sid.Tools.StaticVisitor.Tests
             var visitor = new StaticVisitor(out var actual);
             visitor.Visit(typeof(DataStructureA));
             Assert.IsTrue(actual.Count == 2);
-            Assert.IsTrue(actual.Contains(typeof(DataStructureA)));
-            Assert.IsTrue(actual.Contains(typeof(DataStructureB)));
+            Assert.IsTrue(actual[0] == typeof(DataStructureA));
+            Assert.IsTrue(actual[1] == typeof(DataStructureB));
         }
 
         [TestMethod]
@@ -162,7 +162,7 @@ namespace Sid.Tools.StaticVisitor.Tests
             });
             visitor.Visit(typeof(DataStructureA));
             Assert.IsTrue(actual.Count == 1);
-            Assert.IsTrue(actual.Contains(typeof(DataStructureA)));
+            Assert.IsTrue(actual[0] == typeof(DataStructureA));
         }
     }
 
@@ -181,10 +181,10 @@ namespace Sid.Tools.StaticVisitor.Tests
             var visitor = new StaticVisitor(out var actual);
             visitor.Visit(typeof(DataStructure));
             Assert.IsTrue(actual.Count == 4);
-            Assert.IsTrue(actual.Contains(typeof(DataStructure)));
-            Assert.IsTrue(actual.Contains(typeof(IInterface1)));
-            Assert.IsTrue(actual.Contains(typeof(IInterface2)));
-            Assert.IsTrue(actual.Contains(typeof(IInterfaceBase)));
+            Assert.IsTrue(actual[0] == typeof(DataStructure));
+            Assert.IsTrue(actual[1] == typeof(IInterface1));
+            Assert.IsTrue(actual[2] == typeof(IInterfaceBase));
+            Assert.IsTrue(actual[3] == typeof(IInterface2));
         }
 
         [TestMethod]
@@ -196,12 +196,12 @@ namespace Sid.Tools.StaticVisitor.Tests
             });
             visitor.Visit(typeof(DataStructure));
             Assert.IsTrue(actual.Count == 6);
-            Assert.IsTrue(actual.Contains(typeof(DataStructure)));
-            Assert.IsTrue(actual.Contains(typeof(IInterface1)));
-            Assert.IsTrue(actual.Contains(typeof(IInterfaceBase)));
-            Assert.IsTrue(actual.Contains(typeof(IInterfaceBase)));
-            Assert.IsTrue(actual.Contains(typeof(IInterface2)));
-            Assert.IsTrue(actual.Contains(typeof(IInterfaceBase)));
+            Assert.IsTrue(actual[0] == typeof(DataStructure));
+            Assert.IsTrue(actual[1] == typeof(IInterface1));
+            Assert.IsTrue(actual[2] == typeof(IInterfaceBase));
+            Assert.IsTrue(actual[3] == typeof(IInterfaceBase));
+            Assert.IsTrue(actual[4] == typeof(IInterface2));
+            Assert.IsTrue(actual[5] == typeof(IInterfaceBase));
         }
     }
 
@@ -223,8 +223,8 @@ namespace Sid.Tools.StaticVisitor.Tests
             });
             visitor.Visit(typeof(GenericType<EncompassedType>));
             Assert.IsTrue(actual.Count == 2);
-            Assert.IsTrue(actual.Contains(typeof(GenericType<EncompassedType>)));
-            Assert.IsTrue(actual.Contains(typeof(EncompassedType)));
+            Assert.IsTrue(actual[0] == typeof(GenericType<EncompassedType>));
+            Assert.IsTrue(actual[1] == typeof(EncompassedType));
         }
 
         [TestMethod]
@@ -236,8 +236,8 @@ namespace Sid.Tools.StaticVisitor.Tests
             });
             visitor.Visit(typeof(EncompassedType[]));
             Assert.IsTrue(actual.Count == 2);
-            Assert.IsTrue(actual.Contains(typeof(EncompassedType[])));
-            Assert.IsTrue(actual.Contains(typeof(EncompassedType)));
+            Assert.IsTrue(actual[0] == typeof(EncompassedType[]));
+            Assert.IsTrue(actual[1] == typeof(EncompassedType));
         }
 
         [TestMethod]
@@ -250,7 +250,7 @@ namespace Sid.Tools.StaticVisitor.Tests
             });
             visitor.Visit(typeof(EncompassedType[]));
             Assert.IsTrue(actual.Count == 1);
-            Assert.IsTrue(actual.Contains(typeof(EncompassedType[])));
+            Assert.IsTrue(actual[0] == typeof(EncompassedType[]));
         }
     }
 
@@ -270,8 +270,8 @@ namespace Sid.Tools.StaticVisitor.Tests
             });
             visitor.Visit(typeof(DataStructureA));
             Assert.IsTrue(actual.Count == 2);
-            Assert.IsTrue(actual.Contains(typeof(DataStructureA)));
-            Assert.IsTrue(actual.Contains(typeof(DataStructureB)));
+            Assert.IsTrue(actual[0] == typeof(DataStructureA));
+            Assert.IsTrue(actual[1] == typeof(DataStructureB));
         }
     }
 }
