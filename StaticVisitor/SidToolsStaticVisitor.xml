@@ -56,24 +56,24 @@
             A customizable visitor for static data structures
             </summary>
         </member>
-        <member name="M:Sid.Tools.StaticVisitor.StaticVisitor.#ctor(System.Collections.Generic.ICollection{System.Type}@)">
+        <member name="M:Sid.Tools.StaticVisitor.StaticVisitor.#ctor(System.Collections.Generic.IList{System.Type}@)">
             <summary>
             Creates a new instance of <see cref="T:Sid.Tools.StaticVisitor.StaticVisitor"/>
             </summary>
             <param name="collection">The collection to which visited types will be added</param>
         </member>
-        <member name="M:Sid.Tools.StaticVisitor.StaticVisitor.#ctor(System.Collections.Generic.ICollection{System.Type}@,Sid.Tools.StaticVisitor.StaticVisitorConfiguration)">
+        <member name="M:Sid.Tools.StaticVisitor.StaticVisitor.#ctor(System.Collections.Generic.IList{System.Type}@,Sid.Tools.StaticVisitor.StaticVisitorConfiguration)">
             <summary>
             Creates a new instance of <see cref="T:Sid.Tools.StaticVisitor.StaticVisitor"/>
             </summary>
-            <param name="collection">The collection to which visited types will be added</param>
+            <param name="collection">The collection to which visited types will be added. Use an ordered collection to preserve order of visit</param>
             <param name="configuration">The custom configuration which defines the visitor behaviour</param>
         </member>
         <member name="M:Sid.Tools.StaticVisitor.StaticVisitor.#ctor(System.Collections.Generic.ICollection{System.Type})">
             <summary>
             Creates a new instance of <see cref="T:Sid.Tools.StaticVisitor.StaticVisitor"/>
             </summary>
-            <param name="collection">The collection to which visited types will be added</param>
+            <param name="collection">The collection to which visited types will be added. Use an ordered collection to preserve order of visit</param>
         </member>
         <member name="M:Sid.Tools.StaticVisitor.StaticVisitor.#ctor(System.Collections.Generic.ICollection{System.Type},Sid.Tools.StaticVisitor.StaticVisitorConfiguration)">
             <summary>
