@@ -58,7 +58,12 @@ namespace Sid.Tools.StaticVisitor
     /// </summary>
     public class StaticVisitor
     {
-        public Action<Type> Action { get; }
+        private readonly Action<Type> Action;
+
+        /// <summary>
+        /// Event raised when a tracing event occurs. Can be used for debugging purposes
+        /// </summary>
+        public event EventHandler<string> Trace;
 
         private readonly StaticVisitorConfiguration configuration;
 
@@ -139,36 +144,62 @@ namespace Sid.Tools.StaticVisitor
         private void VisitInternal(Type type, System.Collections.Generic.ISet<Type> visitedSet)
         {
             if (configuration.AvoidMultipleVisits && visitedSet.Contains(type))
+            {
+                Trace?.Invoke(this, $"{type} visit avoided as type already visited.");
                 return;
+            }
             else
                 visitedSet.Add(type);
 
             if (!configuration.TypeCanBeVisited(type))
+            {
+                Trace?.Invoke(this, $"{type} cannot be visited as per current configuration.");
                 return;
+            }
 
             Action(type);
 
             if (configuration.VisitInheritedTypes)
+            {
+                Trace?.Invoke(this, $"Iterating through {type} inherited types now...");
                 foreach (var inheritedType in type.GetInheritedTypes())
+                {
+                    Trace?.Invoke(this, $"> Recursing over {inheritedType}");
                     VisitInternal(inheritedType, visitedSet);
+                }
+            }
 
             if (configuration.VisitEncompassingTypes)
+            {
+                Trace?.Invoke(this, $"Iterating through {type} encompassing types now...");
                 foreach (var encompassingType in type.GetEncompassingTypes())
+                {
+                    Trace?.Invoke(this, $"> Recursing over {encompassingType}");
                     VisitInternal(encompassingType, visitedSet);
+                }
+            }
 
             if (configuration.VisitAssignableTypes)
             {
+                Trace?.Invoke(this, $"Iterating through {type} assignable types now...");
                 var assignableTypes = type.GetAssignableTypes(AppDomain.CurrentDomain);
                 foreach (var assignableType in assignableTypes)
+                {
+                    Trace?.Invoke(this, $"> Recursing over {assignableType}");
                     VisitInternal(assignableType, visitedSet);
+                }
             }
 
+            Trace?.Invoke(this, $"Iterating through {type} properties' type now...");
             foreach (var propertyType in
                 type
                     .GetProperties()
                     .Where(x => configuration.PropertyCanBeVisited(x))
                     .Select(x => x.PropertyType))
+            {
+                Trace?.Invoke(this, $"> Recursing over {propertyType}");
                 VisitInternal(propertyType, visitedSet);
+            }
         }
     }
 
