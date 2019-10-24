@@ -69,6 +69,17 @@ namespace Sid.Tools.StaticVisitor
         /// <example><code>visitor.Trace += (o, m) => System.Console.Out.WriteLine($"[VISITOR] {m}");</code></example>
         public event EventHandler<string> Trace;
 
+        /// <summary>
+        /// Raises the event <see cref="Trace"/>
+        /// </summary>
+        /// <param name="message">Tracing message</param>
+        /// <param name="stackLevel">0-based position in the stack</param>
+        protected virtual void OnTrace(string message, int stackLevel)
+        {
+            var handler = Trace;
+            handler?.Invoke(this, $"{string.Empty.PadLeft(stackLevel * 3)}{message}");
+        }
+
         private readonly StaticVisitorConfiguration configuration;
 
         /// <summary>
@@ -142,14 +153,19 @@ namespace Sid.Tools.StaticVisitor
         /// <param name="type"></param>
         public void Visit(Type type)
         {
-            VisitInternal(type, new System.Collections.Generic.HashSet<Type>());
+            VisitInternal(type, new System.Collections.Generic.HashSet<Type>(), -1);
         }
 
-        private void VisitInternal(Type type, System.Collections.Generic.ISet<Type> visitedSet)
+        private void VisitInternal(
+            Type type,
+            System.Collections.Generic.ISet<Type> visitedSet,
+            int stackLevel)
         {
+            stackLevel++;
             if (configuration.AvoidMultipleVisits && visitedSet.Contains(type))
             {
-                Trace?.Invoke(this, $"{type} visit avoided as type already visited.");
+                OnTrace($"{type} visit avoided as type already visited.", stackLevel);
+                stackLevel--;
                 return;
             }
             else
@@ -157,7 +173,8 @@ namespace Sid.Tools.StaticVisitor
 
             if (!configuration.TypeCanBeVisited(type))
             {
-                Trace?.Invoke(this, $"{type} cannot be visited as per current configuration.");
+                OnTrace($"{type} cannot be visited as per current configuration.", stackLevel);
+                stackLevel--;
                 return;
             }
 
@@ -165,44 +182,44 @@ namespace Sid.Tools.StaticVisitor
 
             if (configuration.VisitInheritedTypes)
             {
-                Trace?.Invoke(this, $"Iterating through {type} inherited types now...");
+                OnTrace($"Iterating through {type} inherited types now...", stackLevel);
                 foreach (var inheritedType in type.GetInheritedTypes())
                 {
-                    Trace?.Invoke(this, $"> Recursing over {inheritedType}");
-                    VisitInternal(inheritedType, visitedSet);
+                    OnTrace($">Recursing over {inheritedType}", stackLevel);
+                    VisitInternal(inheritedType, visitedSet, stackLevel);
                 }
             }
 
             if (configuration.VisitEncompassingTypes)
             {
-                Trace?.Invoke(this, $"Iterating through {type} encompassing types now...");
+                OnTrace($"Iterating through {type} encompassing types now...", stackLevel);
                 foreach (var encompassingType in type.GetEncompassingTypes())
                 {
-                    Trace?.Invoke(this, $"> Recursing over {encompassingType}");
-                    VisitInternal(encompassingType, visitedSet);
+                    OnTrace($">Recursing over {encompassingType}", stackLevel);
+                    VisitInternal(encompassingType, visitedSet, stackLevel);
                 }
             }
 
             if (configuration.VisitAssignableTypes)
             {
-                Trace?.Invoke(this, $"Iterating through {type} assignable types now...");
+                OnTrace($"Iterating through {type} assignable types now...", stackLevel);
                 var assignableTypes = type.GetAssignableTypes(AppDomain.CurrentDomain);
                 foreach (var assignableType in assignableTypes)
                 {
-                    Trace?.Invoke(this, $"> Recursing over {assignableType}");
-                    VisitInternal(assignableType, visitedSet);
+                    OnTrace($">Recursing over {assignableType}", stackLevel);
+                    VisitInternal(assignableType, visitedSet, stackLevel);
                 }
             }
 
-            Trace?.Invoke(this, $"Iterating through {type} properties' type now...");
+            OnTrace($"Iterating through {type} properties' type now...", stackLevel);
             foreach (var propertyType in
                 type
                     .GetProperties()
                     .Where(x => configuration.PropertyCanBeVisited(x))
                     .Select(x => x.PropertyType))
             {
-                Trace?.Invoke(this, $"> Recursing over {propertyType}");
-                VisitInternal(propertyType, visitedSet);
+                OnTrace($">Recursing over {propertyType}", stackLevel);
+                VisitInternal(propertyType, visitedSet, stackLevel);
             }
         }
     }
