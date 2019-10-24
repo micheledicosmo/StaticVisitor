@@ -5,7 +5,7 @@
 
     <IsPackable>false</IsPackable>
 
-    <AssemblyName>SidStaticVisitorTests</AssemblyName>
+    <AssemblyName>Sid.StaticVisitor.Tests</AssemblyName>
 
     <RootNamespace>Sid.StaticVisitor.Tests</RootNamespace>
   </PropertyGroup>
