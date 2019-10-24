@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <doc>
     <assembly>
-        <name>SidToolsStaticVisitor</name>
+        <name>Sid.Tools.StaticVisitor</name>
     </assembly>
     <members>
         <member name="T:Sid.Tools.StaticVisitor.StaticVisitorConfiguration">
@@ -11,7 +11,7 @@
         </member>
         <member name="P:Sid.Tools.StaticVisitor.StaticVisitorConfiguration.TypeCanBeVisited">
              <summary>
-             Should return <c>true</c> if the given type should be visited. If it returns <c>false</c>, the type won't be visited (i.e. <see cref="P:Sid.Tools.StaticVisitor.StaticVisitor.Action"/> won't be called, and introspection on the object won't be performed). By default only <c>object</c> and primitive types are excluded. If modifying this behaviour, the default behaviour can be accessed via <see cref="F:Sid.Tools.StaticVisitor.StaticVisitorConfiguration.DefaultTypeCanBeVisited"/>.
+             Should return <c>true</c> if the given type should be visited. If it returns <c>false</c>, the type won't be visited (i.e. <see cref="F:Sid.Tools.StaticVisitor.StaticVisitor.Action"/> won't be called, and introspection on the object won't be performed). By default only <c>object</c> and primitive types are excluded. If modifying this behaviour, the default behaviour can be accessed via <see cref="F:Sid.Tools.StaticVisitor.StaticVisitorConfiguration.DefaultTypeCanBeVisited"/>.
              </summary>
              <example>
              <code>
@@ -22,6 +22,11 @@
             <para/>      &amp;&amp; !x.IsValueType
             <para/>  });</code>
              </example>
+        </member>
+        <member name="F:Sid.Tools.StaticVisitor.StaticVisitorConfiguration.DefaultTypeCanBeVisited">
+            <summary>
+            Default implementation of <see cref="P:Sid.Tools.StaticVisitor.StaticVisitorConfiguration.TypeCanBeVisited"/> which can be used to extend the default behaviour. See example code in <see cref="P:Sid.Tools.StaticVisitor.StaticVisitorConfiguration.TypeCanBeVisited"/>
+            </summary>
         </member>
         <member name="P:Sid.Tools.StaticVisitor.StaticVisitorConfiguration.PropertyCanBeVisited">
             <summary>
@@ -55,6 +60,12 @@
             <summary>
             A customizable visitor for static data structures
             </summary>
+        </member>
+        <member name="E:Sid.Tools.StaticVisitor.StaticVisitor.Trace">
+            <summary>
+            Event raised when a tracing event occurs. Can be used for debugging purposes
+            </summary>
+            <example><code>visitor.Trace += (o, m) => System.Console.Out.WriteLine($"[VISITOR] {m}");</code></example>
         </member>
         <member name="M:Sid.Tools.StaticVisitor.StaticVisitor.#ctor(System.Collections.Generic.IList{System.Type}@)">
             <summary>

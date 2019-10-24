@@ -66,6 +66,7 @@ namespace Sid.Tools.StaticVisitor
         /// <summary>
         /// Event raised when a tracing event occurs. Can be used for debugging purposes
         /// </summary>
+        /// <example><code>visitor.Trace += (o, m) => System.Console.Out.WriteLine($"[VISITOR] {m}");</code></example>
         public event EventHandler<string> Trace;
 
         private readonly StaticVisitorConfiguration configuration;
