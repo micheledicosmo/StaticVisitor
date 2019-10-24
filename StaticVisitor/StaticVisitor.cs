@@ -22,6 +22,9 @@ namespace Sid.Tools.StaticVisitor
         /// </example>
         public Func<Type, bool> TypeCanBeVisited { get; set; } = DefaultTypeCanBeVisited;
 
+        /// <summary>
+        /// Default implementation of <see cref="TypeCanBeVisited"/> which can be used to extend the default behaviour. See example code in <see cref="TypeCanBeVisited"/>
+        /// </summary>
         public readonly static Func<Type, bool> DefaultTypeCanBeVisited = type => !type.IsPrimitive && type != typeof(object);
 
         /// <summary>
