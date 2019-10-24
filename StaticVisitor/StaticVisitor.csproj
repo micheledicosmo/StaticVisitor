@@ -6,9 +6,9 @@
     <AssemblyName>Sid.Tools.StaticVisitor</AssemblyName>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>Sid.Tools.StaticVisitor</PackageId>
-    <Version>1.4.0</Version>
-    <AssemblyVersion>1.4.0.0</AssemblyVersion>
-    <FileVersion>1.4.0.0</FileVersion>
+    <Version>1.4.1</Version>
+    <AssemblyVersion>1.4.1.0</AssemblyVersion>
+    <FileVersion>1.4.1.0</FileVersion>
     <Authors>Michele Di Cosmo</Authors>
     <Company>Michele Di Cosmo</Company>
     <Product>Data structure static visitor</Product>
