@@ -266,7 +266,7 @@ namespace Sid.Tools.StaticVisitor.Tests
         {
             var visitor = new StaticVisitor(out var actual, new StaticVisitorConfiguration()
             {
-                VisitAssignableTypes = true
+                VisitAssignableTypesOf = t => t.Namespace == typeof(Assignable).Namespace
             });
             visitor.Visit(typeof(DataStructureA));
             Assert.IsTrue(actual.Count == 2);

@@ -51,9 +51,9 @@
             This property specifies whether to visit only generic type arguments; that is, the types that have been specified for the visited generic types. If the generic type is a generic type definition, no generic type argument type will be visited (i.e. the possibly expected behaviour that all possible types that can be used as a generic type are visited is not the actual one).
             </remarks>
         </member>
-        <member name="P:Sid.Tools.StaticVisitor.StaticVisitorConfiguration.VisitAssignableTypes">
+        <member name="P:Sid.Tools.StaticVisitor.StaticVisitorConfiguration.VisitAssignableTypesOf">
             <summary>
-            Indicates whether the types in the current app domain that implement a visited type should be discovered through reflection and visited. By default assignable types are not visited (defaults to <c>false</c>).
+            Should return <c>true</c> if the assignable types of the given type should be discovered in the current app domain through reflection and visited. By default no assignable types are visited (defaults to <c>false</c>).
             </summary>
         </member>
         <member name="T:Sid.Tools.StaticVisitor.StaticVisitor">
@@ -66,6 +66,13 @@
             Event raised when a tracing event occurs. Can be used for debugging purposes
             </summary>
             <example><code>visitor.Trace += (o, m) => System.Console.Out.WriteLine($"[VISITOR] {m}");</code></example>
+        </member>
+        <member name="M:Sid.Tools.StaticVisitor.StaticVisitor.OnTrace(System.String,System.Int32)">
+            <summary>
+            Raises the event <see cref="E:Sid.Tools.StaticVisitor.StaticVisitor.Trace"/>
+            </summary>
+            <param name="message">Tracing message</param>
+            <param name="stackLevel">0-based position in the stack</param>
         </member>
         <member name="M:Sid.Tools.StaticVisitor.StaticVisitor.#ctor(System.Collections.Generic.IList{System.Type}@)">
             <summary>

@@ -51,9 +51,9 @@ namespace Sid.Tools.StaticVisitor
         public bool VisitEncompassingTypes { get; set; } = true;
 
         /// <summary>
-        /// Indicates whether the types in the current app domain that implement a visited type should be discovered through reflection and visited. By default assignable types are not visited (defaults to <c>false</c>).
+        /// Should return <c>true</c> if the assignable types of the given type should be discovered in the current app domain through reflection and visited. By default no assignable types are visited (defaults to <c>false</c>).
         /// </summary>
-        public bool VisitAssignableTypes { get; set; } = false;
+        public Func<Type, bool> VisitAssignableTypesOf { get; set; } = x => false;
     }
 
     /// <summary>
@@ -200,7 +200,7 @@ namespace Sid.Tools.StaticVisitor
                 }
             }
 
-            if (configuration.VisitAssignableTypes)
+            if (configuration.VisitAssignableTypesOf(type))
             {
                 OnTrace($"Iterating through {type} assignable types now...", stackLevel);
                 var assignableTypes = type.GetAssignableTypes(AppDomain.CurrentDomain);
@@ -209,6 +209,10 @@ namespace Sid.Tools.StaticVisitor
                     OnTrace($">Recursing over {assignableType}", stackLevel);
                     VisitInternal(assignableType, visitedSet, stackLevel);
                 }
+            }
+            else
+            {
+                OnTrace($"{type} assignable types cannot be visited as per current configuration.", stackLevel);
             }
 
             OnTrace($"Iterating through {type} properties' type now...", stackLevel);
