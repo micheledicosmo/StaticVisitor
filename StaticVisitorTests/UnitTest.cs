@@ -65,7 +65,7 @@ namespace Sid.Tools.StaticVisitor.Core.Tests
         public void ActionCtorOk()
         {
             var actual = new System.Collections.Generic.List<System.Type>();
-            var visitor = new StaticVisitor(x => actual.Add(x));
+            var visitor = new StaticVisitor((x, stack) => actual.Add(x));
             visitor.Visit(typeof(DataStructure));
             Assert.IsTrue(actual.Count == 1);
             Assert.IsTrue(actual.Contains(typeof(DataStructure)));
@@ -84,7 +84,7 @@ namespace Sid.Tools.StaticVisitor.Core.Tests
                 }
             };
             var actual = new System.Collections.Generic.List<System.Type>();
-            var visitor = new StaticVisitor(x => actual.Add(x), configuration);
+            var visitor = new StaticVisitor((x, stack) => actual.Add(x), configuration);
             visitor.Visit(typeof(DataStructure));
             Assert.IsTrue(configurationCalled);
         }
