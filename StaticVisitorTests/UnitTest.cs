@@ -125,7 +125,7 @@ namespace Sid.Tools.StaticVisitor.Core.Tests
             Assert.IsTrue(actual.First().Item1 == typeof(DataStructure));
             Assert.IsTrue(actual.First().Item2.Count == 1);
             Assert.IsTrue(actual.First().Item2.Single() is InitialTypeTypeVisit);
-            Assert.IsTrue(((InitialTypeTypeVisit)actual.First().Item2.Single()).InitialType == typeof(DataStructure));
+            Assert.IsTrue(((InitialTypeTypeVisit)actual.First().Item2.Single()).Type == typeof(DataStructure));
 
             Assert.IsTrue(actual.Skip(1).Single().Item1 == typeof(PropertyObject));
             Assert.IsTrue(actual.Skip(1).Single().Item2.Count == 2);

@@ -2,26 +2,24 @@
 
 namespace Sid.Tools.StaticVisitor.Core
 {
-    public abstract class TypeVisit { }
+    public abstract class TypeVisit
+    {
+        protected TypeVisit(Type type)
+        {
+            @Type = type;
+        }
+
+        public Type @Type { get; }
+    }
     
     public class InitialTypeTypeVisit : TypeVisit
     {
-        public InitialTypeTypeVisit(Type initialType)
-        {
-            InitialType = initialType;
-        }
-
-        public Type InitialType { get; }
+        public InitialTypeTypeVisit(Type initialType): base(initialType) {}
     }
 
     public abstract class InheritingTypeTypeVisit : TypeVisit
     {
-        public InheritingTypeTypeVisit(Type inheritingType)
-        {
-            InheritingType = inheritingType;
-        }
-
-        public Type InheritingType { get; }
+        protected InheritingTypeTypeVisit(Type inheritingType): base(inheritingType) {}
     }
 
     public class InheritingBaseTypeTypeVisit : InheritingTypeTypeVisit
@@ -36,48 +34,32 @@ namespace Sid.Tools.StaticVisitor.Core
 
     public abstract class EncompassedTypeTypeVisit : TypeVisit
     {
-
+        protected EncompassedTypeTypeVisit(Type encompassedType): base(encompassedType) {}
     }
     
     public class ParameterTypeTypeVisit : EncompassedTypeTypeVisit
     {
-        public ParameterTypeTypeVisit(Type parameterType)
-        {
-            ParameterType = parameterType;
-        }
-
-        public Type ParameterType { get; }
+        public ParameterTypeTypeVisit(Type parameterType): base(parameterType) {}
     }
 
     public class ElementTypeTypeVisit : EncompassedTypeTypeVisit
     {
-        public ElementTypeTypeVisit(Type elementType)
-        {
-            ElementType = elementType;
-        }
-
-        public Type ElementType { get; }
+        public ElementTypeTypeVisit(Type elementType): base(elementType) {}
     }
 
-    public class AssignedTypeTypeVisit : TypeVisit
+    public class AssignableTypeTypeVisit : TypeVisit
     {
-        public AssignedTypeTypeVisit(Type assignableType)
-        {
-            AssignableType = assignableType;
-        }
-
-        public Type AssignableType { get; }
+        public AssignableTypeTypeVisit(Type assignableType): base(assignableType) {}
     }
     
     public class PropertyTypeVisit : TypeVisit
     {
-        public PropertyTypeVisit(Type propertyType, string propertyName)
+        public PropertyTypeVisit(Type propertyType, string propertyName):base(propertyType)
         {
-            PropertyType = propertyType;
             PropertyName = propertyName;
         }
 
-        public Type PropertyType { get; }
+        public Type PropertyType => @Type;
 
         public string PropertyName { get; }
     }

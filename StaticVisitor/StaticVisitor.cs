@@ -223,7 +223,7 @@ namespace Sid.Tools.StaticVisitor.Core
                 .SelectMany(s => s.GetTypes())
                 .Where(x => type != x)
                 .Where(type.IsAssignableFrom)
-                .Select(y => (type: y, stackEntry: (TypeVisit)new AssignedTypeTypeVisit(y)));
+                .Select(y => (type: y, stackEntry: (TypeVisit)new AssignableTypeTypeVisit(y)));
         }
 
         public static System.Collections.Generic.IEnumerable<T> ToEnumerable<T>(this T item)
