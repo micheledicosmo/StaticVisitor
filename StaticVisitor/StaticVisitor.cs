@@ -52,7 +52,7 @@ namespace Sid.Tools.StaticVisitor.Core
 
     public class StaticVisitor
     {
-        public Action<Type, System.Collections.Generic.Stack<StackEntry>> Action { get; }
+        public Action<Type, System.Collections.Generic.Stack<TypeVisit>> Action { get; }
 
         private readonly StaticVisitorConfiguration configuration;
 
@@ -90,13 +90,13 @@ namespace Sid.Tools.StaticVisitor.Core
         
         #region ctor List with Stack
 
-        public StaticVisitor(System.Collections.Generic.ICollection<(Type type, System.Collections.Generic.Stack<StackEntry> stack)> list)
+        public StaticVisitor(System.Collections.Generic.ICollection<(Type type, System.Collections.Generic.Stack<TypeVisit> stack)> list)
         {
             Action = (type, stack) => list.Add((type: type, stack: stack.Clone()));
             configuration = new StaticVisitorConfiguration();
         }
 
-        public StaticVisitor(System.Collections.Generic.ICollection<(Type type, System.Collections.Generic.Stack<StackEntry> stack)> list, StaticVisitorConfiguration configuration)
+        public StaticVisitor(System.Collections.Generic.ICollection<(Type type, System.Collections.Generic.Stack<TypeVisit> stack)> list, StaticVisitorConfiguration configuration)
         {
             Action = (type, stack) => list.Add((type: type, stack: stack.Clone()));
             this.configuration = configuration;
@@ -106,13 +106,13 @@ namespace Sid.Tools.StaticVisitor.Core
 
         #region ctor Action
 
-        public StaticVisitor(Action<Type, System.Collections.Generic.Stack<StackEntry>> action)
+        public StaticVisitor(Action<Type, System.Collections.Generic.Stack<TypeVisit>> action)
         {
             Action = action;
             configuration = new StaticVisitorConfiguration();
         }
 
-        public StaticVisitor(Action<Type, System.Collections.Generic.Stack<StackEntry>> action, StaticVisitorConfiguration configuration)
+        public StaticVisitor(Action<Type, System.Collections.Generic.Stack<TypeVisit>> action, StaticVisitorConfiguration configuration)
         {
             Action = action;
             this.configuration = configuration;
@@ -124,13 +124,13 @@ namespace Sid.Tools.StaticVisitor.Core
         {
             VisitInternalWithStackWrapping(
                 type,
-                new System.Collections.Generic.Stack<StackEntry>(),
+                new System.Collections.Generic.Stack<TypeVisit>(),
                 new System.Collections.Generic.HashSet<Type>(),
-                new InitialTypeStackEntry(type)
+                new InitialTypeTypeVisit(type)
                 );
         }
 
-        private void VisitInternal(Type type, System.Collections.Generic.Stack<StackEntry> stack, System.Collections.Generic.ISet<Type> visitedSet)
+        private void VisitInternal(Type type, System.Collections.Generic.Stack<TypeVisit> stack, System.Collections.Generic.ISet<Type> visitedSet)
         {
             if (configuration.AvoidMultipleVisits && visitedSet.Contains(type))
                 return;
@@ -161,18 +161,18 @@ namespace Sid.Tools.StaticVisitor.Core
                 type
                     .GetProperties()
                     .Where(x => configuration.PropertyCanBeVisited(x))
-                    .Select(x => (type: x.PropertyType, stackEntry: (StackEntry)new PropertyStackEntry(x.PropertyType, x.Name)))
+                    .Select(x => (type: x.PropertyType, stackEntry: (TypeVisit)new PropertyTypeVisit(x.PropertyType, x.Name)))
                 )
                     VisitInternalWithStackWrapping(propertyType, stack, visitedSet, stackEntry);
         }
 
         private void VisitInternalWithStackWrapping(
             Type type,
-            System.Collections.Generic.Stack<StackEntry> stack,
+            System.Collections.Generic.Stack<TypeVisit> stack,
             System.Collections.Generic.ISet<Type> visitedSet,
-            StackEntry stackEntry)
+            TypeVisit typeVisit)
         {
-            stack.Push(stackEntry);
+            stack.Push(typeVisit);
             VisitInternal(type, stack, visitedSet);
             stack.Pop();
         }
@@ -185,11 +185,11 @@ namespace Sid.Tools.StaticVisitor.Core
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static System.Collections.Generic.IEnumerable<(Type type, StackEntry stackEntry)>
+        public static System.Collections.Generic.IEnumerable<(Type type, TypeVisit stackEntry)>
             GetInheritedTypes(this Type type)
         {
-            var baseType = type.BaseType.ToEnumerable().Select(x => (type: x, stackEntry: (StackEntry)new InheritingBaseTypeStackEntry(x)));
-            var interfaces = type.GetInterfaces().Select(x => (type: x, stackEntry: (StackEntry)new InheritingInterfaceStackEntry(x)));
+            var baseType = type.BaseType.ToEnumerable().Select(x => (type: x, stackEntry: (TypeVisit)new InheritingBaseTypeTypeVisit(x)));
+            var interfaces = type.GetInterfaces().Select(x => (type: x, stackEntry: (TypeVisit)new InheritingInterfaceTypeVisit(x)));
             return baseType.Concat(interfaces);
         }
 
@@ -198,24 +198,24 @@ namespace Sid.Tools.StaticVisitor.Core
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static System.Collections.Generic.IEnumerable<(Type type, StackEntry stackEntry)>
+        public static System.Collections.Generic.IEnumerable<(Type type, TypeVisit stackEntry)>
             GetEncompassingTypes(this Type type)
         {
             if (type == null)
-                return Enumerable.Empty<(Type type, StackEntry stackEntry)>();
+                return Enumerable.Empty<(Type type, TypeVisit stackEntry)>();
 
             var parameterTypes = type.IsGenericType
-                ? type.GenericTypeArguments.Where(y => y != type).Select(y => (type: y, stackEntry: (StackEntry)new ParameterTypeStackEntry(y)))
-                : Enumerable.Empty<(Type type, StackEntry stackEntry)>();
+                ? type.GenericTypeArguments.Where(y => y != type).Select(y => (type: y, stackEntry: (TypeVisit)new ParameterTypeTypeVisit(y)))
+                : Enumerable.Empty<(Type type, TypeVisit stackEntry)>();
 
             var elementType = type.HasElementType
-                ? type.GetElementType().ToEnumerable().Select(y => (type: y, stackEntry: (StackEntry)new ElementTypeStackEntry(y)))
-                : Enumerable.Empty<(Type type, StackEntry stackEntry)>();
+                ? type.GetElementType().ToEnumerable().Select(y => (type: y, stackEntry: (TypeVisit)new ElementTypeTypeVisit(y)))
+                : Enumerable.Empty<(Type type, TypeVisit stackEntry)>();
 
             return parameterTypes.Concat(elementType);
         }
 
-        public static System.Collections.Generic.IEnumerable<(Type type, StackEntry stackEntry)>
+        public static System.Collections.Generic.IEnumerable<(Type type, TypeVisit stackEntry)>
             GetAssignableTypes(this Type type, AppDomain appDomain)
         {
             return appDomain
@@ -223,7 +223,7 @@ namespace Sid.Tools.StaticVisitor.Core
                 .SelectMany(s => s.GetTypes())
                 .Where(x => type != x)
                 .Where(type.IsAssignableFrom)
-                .Select(y => (type: y, stackEntry: (StackEntry)new AssignedTypeStackEntry(y)));
+                .Select(y => (type: y, stackEntry: (TypeVisit)new AssignedTypeTypeVisit(y)));
         }
 
         public static System.Collections.Generic.IEnumerable<T> ToEnumerable<T>(this T item)

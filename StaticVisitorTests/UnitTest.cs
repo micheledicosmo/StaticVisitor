@@ -117,21 +117,21 @@ namespace Sid.Tools.StaticVisitor.Core.Tests
         [TestMethod]
         public void BasicOk()
         {
-            var actual = new System.Collections.Generic.List<(System.Type, System.Collections.Generic.Stack<StackEntry>)>();
+            var actual = new System.Collections.Generic.List<(System.Type, System.Collections.Generic.Stack<TypeVisit>)>();
             var visitor = new StaticVisitor(actual);
             visitor.Visit(typeof(DataStructure));
             Assert.IsTrue(actual.Count == 2);
 
             Assert.IsTrue(actual.First().Item1 == typeof(DataStructure));
             Assert.IsTrue(actual.First().Item2.Count == 1);
-            Assert.IsTrue(actual.First().Item2.Single() is InitialTypeStackEntry);
-            Assert.IsTrue(((InitialTypeStackEntry)actual.First().Item2.Single()).InitialType == typeof(DataStructure));
+            Assert.IsTrue(actual.First().Item2.Single() is InitialTypeTypeVisit);
+            Assert.IsTrue(((InitialTypeTypeVisit)actual.First().Item2.Single()).InitialType == typeof(DataStructure));
 
             Assert.IsTrue(actual.Skip(1).Single().Item1 == typeof(PropertyObject));
             Assert.IsTrue(actual.Skip(1).Single().Item2.Count == 2);
-            Assert.IsTrue(actual.Skip(1).Single().Item2.First() is PropertyStackEntry);
-            Assert.IsTrue(((PropertyStackEntry)actual.Skip(1).Single().Item2.First()).PropertyType == typeof(PropertyObject));
-            Assert.IsTrue(((PropertyStackEntry)actual.Skip(1).Single().Item2.First()).PropertyName == "Property");
+            Assert.IsTrue(actual.Skip(1).Single().Item2.First() is PropertyTypeVisit);
+            Assert.IsTrue(((PropertyTypeVisit)actual.Skip(1).Single().Item2.First()).PropertyType == typeof(PropertyObject));
+            Assert.IsTrue(((PropertyTypeVisit)actual.Skip(1).Single().Item2.First()).PropertyName == "Property");
         }
 
         [TestMethod]
