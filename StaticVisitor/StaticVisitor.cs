@@ -52,43 +52,45 @@ namespace Sid.Tools.StaticVisitor.Core
 
     public class StaticVisitor
     {
-        public Action<Type> Action { get; }
+        public Action<Type, System.Collections.Generic.Stack<StackEntry>> Action { get; }
 
         private readonly StaticVisitorConfiguration configuration;
 
         public StaticVisitor(out System.Collections.Generic.ICollection<Type> list)
         {
             list = new System.Collections.Generic.List<Type>();
-            Action = list.Add;
+            var listClosure = list;
+            Action = (type, stack) => listClosure.Add(type);
             configuration = new StaticVisitorConfiguration();
         }
 
         public StaticVisitor(out System.Collections.Generic.ICollection<Type> list, StaticVisitorConfiguration configuration)
         {
             list = new System.Collections.Generic.List<Type>();
-            Action = list.Add;
+            var listClosure = list;
+            Action = (type, stack) => listClosure.Add(type);
             this.configuration = configuration;
         }
 
         public StaticVisitor(System.Collections.Generic.ICollection<Type> list)
         {
-            Action = list.Add;
+            Action = (type, stack) => list.Add(type);
             configuration = new StaticVisitorConfiguration();
         }
 
         public StaticVisitor(System.Collections.Generic.ICollection<Type> list, StaticVisitorConfiguration configuration)
         {
-            Action = list.Add;
+            Action = (type, stack) => list.Add(type);
             this.configuration = configuration;
         }
 
-        public StaticVisitor(Action<Type> action)
+        public StaticVisitor(Action<Type, System.Collections.Generic.Stack<StackEntry>> action)
         {
             Action = action;
             configuration = new StaticVisitorConfiguration();
         }
 
-        public StaticVisitor(Action<Type> action, StaticVisitorConfiguration configuration)
+        public StaticVisitor(Action<Type, System.Collections.Generic.Stack<StackEntry>> action, StaticVisitorConfiguration configuration)
         {
             Action = action;
             this.configuration = configuration;
@@ -117,7 +119,7 @@ namespace Sid.Tools.StaticVisitor.Core
                 foreach (var (encompassingType, stackEntry) in type.GetEncompassingTypes())
                     VisitInternalWithStackWrapping(encompassingType, stack, visitedSet, stackEntry);
 
-            Action(type);
+            Action(type, stack);
 
             if (configuration.VisitAssignableTypes)
             {
