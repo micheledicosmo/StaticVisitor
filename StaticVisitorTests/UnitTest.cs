@@ -123,13 +123,15 @@ namespace Sid.Tools.StaticVisitor.Core.Tests
             Assert.IsTrue(actual.Count == 2);
 
             Assert.IsTrue(actual.First().Item1 == typeof(DataStructure));
-            Assert.IsTrue(actual.First().Item2.Count == 0);
+            Assert.IsTrue(actual.First().Item2.Count == 1);
+            Assert.IsTrue(actual.First().Item2.Single() is InitialTypeStackEntry);
+            Assert.IsTrue(((InitialTypeStackEntry)actual.First().Item2.Single()).InitialType == typeof(DataStructure));
 
             Assert.IsTrue(actual.Skip(1).Single().Item1 == typeof(PropertyObject));
-            Assert.IsTrue(actual.Skip(1).Single().Item2.Count == 1);
-            Assert.IsTrue(actual.Skip(1).Single().Item2.Single() is PropertyStackEntry);
-            Assert.IsTrue(((PropertyStackEntry)actual.Skip(1).Single().Item2.Single()).PropertyType == typeof(PropertyObject));
-            Assert.IsTrue(((PropertyStackEntry)actual.Skip(1).Single().Item2.Single()).PropertyName == "Property");
+            Assert.IsTrue(actual.Skip(1).Single().Item2.Count == 2);
+            Assert.IsTrue(actual.Skip(1).Single().Item2.First() is PropertyStackEntry);
+            Assert.IsTrue(((PropertyStackEntry)actual.Skip(1).Single().Item2.First()).PropertyType == typeof(PropertyObject));
+            Assert.IsTrue(((PropertyStackEntry)actual.Skip(1).Single().Item2.First()).PropertyName == "Property");
         }
 
         [TestMethod]

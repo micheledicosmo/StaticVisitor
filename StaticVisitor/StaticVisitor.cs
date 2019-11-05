@@ -122,7 +122,12 @@ namespace Sid.Tools.StaticVisitor.Core
 
         public void Visit(Type type)
         {
-            VisitInternal(type, new System.Collections.Generic.Stack<StackEntry>(), new System.Collections.Generic.HashSet<Type>());
+            VisitInternalWithStackWrapping(
+                type,
+                new System.Collections.Generic.Stack<StackEntry>(),
+                new System.Collections.Generic.HashSet<Type>(),
+                new InitialTypeStackEntry(type)
+                );
         }
 
         private void VisitInternal(Type type, System.Collections.Generic.Stack<StackEntry> stack, System.Collections.Generic.ISet<Type> visitedSet)

@@ -3,6 +3,16 @@
 namespace Sid.Tools.StaticVisitor.Core
 {
     public abstract class StackEntry { }
+    
+    public class InitialTypeStackEntry : StackEntry
+    {
+        public InitialTypeStackEntry(Type initialType)
+        {
+            InitialType = initialType;
+        }
+
+        public Type InitialType { get; }
+    }
 
     public abstract class InheritingTypeStackEntry : StackEntry
     {
