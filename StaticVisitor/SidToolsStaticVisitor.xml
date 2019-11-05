@@ -1,0 +1,138 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Sid.Tools.StaticVisitor</name>
+    </assembly>
+    <members>
+        <member name="T:Sid.Tools.StaticVisitor.StaticVisitorConfiguration">
+            <summary>
+            Simple container for <see cref="T:Sid.Tools.StaticVisitor.StaticVisitor"/> configuration parameters
+            </summary>
+        </member>
+        <member name="P:Sid.Tools.StaticVisitor.StaticVisitorConfiguration.TypeCanBeVisited">
+             <summary>
+             Should return <c>true</c> if the given type should be visited. If it returns <c>false</c>, the type won't be visited (i.e. <see cref="F:Sid.Tools.StaticVisitor.StaticVisitor.Action"/> won't be called, and introspection on the object won't be performed). By default only <c>object</c> and primitive types are excluded. If modifying this behaviour, the default behaviour can be accessed via <see cref="F:Sid.Tools.StaticVisitor.StaticVisitorConfiguration.DefaultTypeCanBeVisited"/>.
+             </summary>
+             <example>
+             <code>
+            var visitor = new Tools.DataStructure.StaticVisitor(out var list, new Tools.DataStructure.StaticVisitorConfiguration()
+            <para/>  {
+            <para/>    TypeCanBeVisited = x =&gt;
+            <para/>      Tools.DataStructure.StaticVisitorConfiguration.DefaultTypeCanBeVisited(x)
+            <para/>      &amp;&amp; !x.IsValueType
+            <para/>  });</code>
+             </example>
+        </member>
+        <member name="F:Sid.Tools.StaticVisitor.StaticVisitorConfiguration.DefaultTypeCanBeVisited">
+            <summary>
+            Default implementation of <see cref="P:Sid.Tools.StaticVisitor.StaticVisitorConfiguration.TypeCanBeVisited"/> which can be used to extend the default behaviour. See example code in <see cref="P:Sid.Tools.StaticVisitor.StaticVisitorConfiguration.TypeCanBeVisited"/>
+            </summary>
+        </member>
+        <member name="P:Sid.Tools.StaticVisitor.StaticVisitorConfiguration.PropertyCanBeVisited">
+            <summary>
+            Should return <c>true</c> if the given property should be visited. By default all properties are visited (defaults to <c>true</c>).
+            </summary>
+        </member>
+        <member name="P:Sid.Tools.StaticVisitor.StaticVisitorConfiguration.AvoidMultipleVisits">
+            <summary>
+            Indicates whether types should be visited only once, no matter if they appear multiple times in the data structure. By default multiple visits are disabled (defaults to <c>true</c>).
+            </summary>
+        </member>
+        <member name="P:Sid.Tools.StaticVisitor.StaticVisitorConfiguration.VisitInheritedTypes">
+            <summary>
+            Indicates whether the type and interfaces that a type directly inherits should be visited. By default inherited types are visited (defaults to <c>true</c>).
+            </summary>
+        </member>
+        <member name="P:Sid.Tools.StaticVisitor.StaticVisitorConfiguration.VisitEncompassingTypes">
+            <summary>
+            Indicates whether, when a type which has encompassing types is visited (i.e. parameter types or element type), its encompassing types should be visited as well. By default encompassing types are visited (defaults to <c>true</c>).
+            </summary>
+            <remarks>
+            This property specifies whether to visit only generic type arguments; that is, the types that have been specified for the visited generic types. If the generic type is a generic type definition, no generic type argument type will be visited (i.e. the possibly expected behaviour that all possible types that can be used as a generic type are visited is not the actual one).
+            </remarks>
+        </member>
+        <member name="P:Sid.Tools.StaticVisitor.StaticVisitorConfiguration.VisitAssignableTypesOf">
+            <summary>
+            Should return <c>true</c> if the assignable types of the given type should be discovered in the current app domain through reflection and visited. By default no assignable types are visited (defaults to <c>false</c>).
+            </summary>
+        </member>
+        <member name="T:Sid.Tools.StaticVisitor.StaticVisitor">
+            <summary>
+            A customizable visitor for static data structures
+            </summary>
+        </member>
+        <member name="E:Sid.Tools.StaticVisitor.StaticVisitor.Trace">
+            <summary>
+            Event raised when a tracing event occurs. Can be used for debugging purposes
+            </summary>
+            <example><code>visitor.Trace += (o, m) => System.Console.Out.WriteLine($"[VISITOR] {m}");</code></example>
+        </member>
+        <member name="M:Sid.Tools.StaticVisitor.StaticVisitor.OnTrace(System.String,System.Int32)">
+            <summary>
+            Raises the event <see cref="E:Sid.Tools.StaticVisitor.StaticVisitor.Trace"/>
+            </summary>
+            <param name="message">Tracing message</param>
+            <param name="stackLevel">0-based position in the stack</param>
+        </member>
+        <member name="M:Sid.Tools.StaticVisitor.StaticVisitor.#ctor(System.Collections.Generic.IList{System.Type}@)">
+            <summary>
+            Creates a new instance of <see cref="T:Sid.Tools.StaticVisitor.StaticVisitor"/>
+            </summary>
+            <param name="collection">The collection to which visited types will be added</param>
+        </member>
+        <member name="M:Sid.Tools.StaticVisitor.StaticVisitor.#ctor(System.Collections.Generic.IList{System.Type}@,Sid.Tools.StaticVisitor.StaticVisitorConfiguration)">
+            <summary>
+            Creates a new instance of <see cref="T:Sid.Tools.StaticVisitor.StaticVisitor"/>
+            </summary>
+            <param name="collection">The collection to which visited types will be added. Use an ordered collection to preserve order of visit</param>
+            <param name="configuration">The custom configuration which defines the visitor behaviour</param>
+        </member>
+        <member name="M:Sid.Tools.StaticVisitor.StaticVisitor.#ctor(System.Collections.Generic.ICollection{System.Type})">
+            <summary>
+            Creates a new instance of <see cref="T:Sid.Tools.StaticVisitor.StaticVisitor"/>
+            </summary>
+            <param name="collection">The collection to which visited types will be added. Use an ordered collection to preserve order of visit</param>
+        </member>
+        <member name="M:Sid.Tools.StaticVisitor.StaticVisitor.#ctor(System.Collections.Generic.ICollection{System.Type},Sid.Tools.StaticVisitor.StaticVisitorConfiguration)">
+            <summary>
+            Creates a new instance of <see cref="T:Sid.Tools.StaticVisitor.StaticVisitor"/>
+            </summary>
+            <param name="collection">The collection to which visited types will be added</param>
+            <param name="configuration">The custom configuration which defines the visitor behaviour</param>
+        </member>
+        <member name="M:Sid.Tools.StaticVisitor.StaticVisitor.#ctor(System.Action{System.Type})">
+            <summary>
+            Creates a new instance of <see cref="T:Sid.Tools.StaticVisitor.StaticVisitor"/>
+            </summary>
+            <param name="action">The action to be invoked when a type is visited</param>
+        </member>
+        <member name="M:Sid.Tools.StaticVisitor.StaticVisitor.#ctor(System.Action{System.Type},Sid.Tools.StaticVisitor.StaticVisitorConfiguration)">
+            <summary>
+            Creates a new instance of <see cref="T:Sid.Tools.StaticVisitor.StaticVisitor"/>
+            </summary>
+            <param name="action">The action to be invoked when a type is visited</param>
+            <param name="configuration">The custom configuration which defines the visitor behaviour</param>
+        </member>
+        <member name="M:Sid.Tools.StaticVisitor.StaticVisitor.Visit(System.Type)">
+            <summary>
+            Starts visiting the type
+            </summary>
+            <param name="type"></param>
+        </member>
+        <member name="M:Sid.Tools.StaticVisitor.ExtensionMethods.GetInheritedTypes(System.Type)">
+            <summary>
+            Returns all interfaces and type directly inherited by <paramref name="type"/>.
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sid.Tools.StaticVisitor.ExtensionMethods.GetEncompassingTypes(System.Type)">
+            <summary>
+            Returns a named tuple with the given <paramref name="type"/> and its encompassing types (i.e. parameter types of generic types, and element type).
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:Sid.Tools.StaticVisitor.ExtensionMethods.ToEnumerable``1(``0)" -->
+    </members>
+</doc>

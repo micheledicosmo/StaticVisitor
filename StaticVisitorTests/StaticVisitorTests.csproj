@@ -1,13 +1,13 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
 
     <IsPackable>false</IsPackable>
 
-    <AssemblyName>SidStaticVisitorCoreTests</AssemblyName>
+    <AssemblyName>Sid.StaticVisitor.Tests</AssemblyName>
 
-    <RootNamespace>Sid.StaticVisitor.Core.Tests</RootNamespace>
+    <RootNamespace>Sid.StaticVisitor.Tests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
