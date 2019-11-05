@@ -61,24 +61,24 @@ namespace Sid.Tools.StaticVisitor
     /// </summary>
     public class StaticVisitor
     {
-        private readonly Action<System.Collections.Generic.Stack<TypeVisit>> Action { get; }
+        private readonly Action<System.Collections.Generic.Stack<TypeVisit>> Action;
 
-        /// <summary>
-        /// Event raised when a tracing event occurs. Can be used for debugging purposes
-        /// </summary>
-        /// <example><code>visitor.Trace += (o, m) => System.Console.Out.WriteLine($"[VISITOR] {m}");</code></example>
-        public event EventHandler<string> Trace;
+        ///// <summary>
+        ///// Event raised when a tracing event occurs. Can be used for debugging purposes
+        ///// </summary>
+        ///// <example><code>visitor.Trace += (o, m) => System.Console.Out.WriteLine($"[VISITOR] {m}");</code></example>
+        //public event EventHandler<string> Trace;
 
-        /// <summary>
-        /// Raises the event <see cref="Trace"/>
-        /// </summary>
-        /// <param name="message">Tracing message</param>
-        /// <param name="stackLevel">0-based position in the stack</param>
-        protected virtual void OnTrace(string message, int stackLevel)
-        {
-            var handler = Trace;
-            handler?.Invoke(this, $"{string.Empty.PadLeft(stackLevel * 3)}{message}");
-        }
+        ///// <summary>
+        ///// Raises the event <see cref="Trace"/>
+        ///// </summary>
+        ///// <param name="message">Tracing message</param>
+        ///// <param name="stackLevel">0-based position in the stack</param>
+        //protected virtual void OnTrace(string message, int stackLevel)
+        //{
+        //    var handler = Trace;
+        //    handler?.Invoke(this, $"{string.Empty.PadLeft(stackLevel * 3)}{message}");
+        //}
 
         private readonly StaticVisitorConfiguration configuration;
 
@@ -129,6 +129,7 @@ namespace Sid.Tools.StaticVisitor
             Action = x => visits.Add(x.Clone());
             this.configuration = configuration;
         }
+
         #endregion
 
         #region ctor Action
@@ -195,7 +196,6 @@ namespace Sid.Tools.StaticVisitor
 
             if (configuration.VisitAssignableTypesOf(type))
             {
-                OnTrace($"Iterating through {type} assignable types now...", stackLevel);
                 var assignableTypes = type.GetAssignableTypes(AppDomain.CurrentDomain);
                 foreach (var (assignableType, stackEntry) in assignableTypes)
                     VisitInternalWithStackWrapping(assignableType, stack, visitedSet, stackEntry);
@@ -271,7 +271,7 @@ namespace Sid.Tools.StaticVisitor
         }
 
         /// <summary>
-        /// Wrapes <paramref name="item"/> in an <see cref="System.Collections.Generic.IEnumerable<typeparamref name="T"/>"/>
+        /// Wraps <paramref name="item"/> in an <see cref="System.Collections.Generic.IEnumerable<typeparamref name="T"/>"/>
         /// </summary>
         /// <typeparam name="T">The type of the item to be wrapped</typeparam>
         /// <param name="item">The item to be wrapped</param>

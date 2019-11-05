@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Sid.Tools.StaticVisitor.Core
+namespace Sid.Tools.StaticVisitor
 {
     public abstract class TypeVisit
     {
