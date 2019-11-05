@@ -203,5 +203,10 @@ namespace Sid.Tools.StaticVisitor.Core
                 yield break;
             yield return item;
         }
+
+        public static System.Collections.Generic.Stack<T> Clone<T>(this System.Collections.Generic.Stack<T> stack)
+        {
+            return new System.Collections.Generic.Stack<T>(new System.Collections.Generic.Stack<T>(stack));
+        }
     }
 }
