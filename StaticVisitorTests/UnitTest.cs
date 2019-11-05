@@ -1,4 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Linq;
 
 namespace Sid.Tools.StaticVisitor.Core.Tests
 {
@@ -116,11 +117,19 @@ namespace Sid.Tools.StaticVisitor.Core.Tests
         [TestMethod]
         public void BasicOk()
         {
-            var visitor = new StaticVisitor(out var actual);
+            var actual = new System.Collections.Generic.List<(System.Type, System.Collections.Generic.Stack<StackEntry>)>();
+            var visitor = new StaticVisitor(actual);
             visitor.Visit(typeof(DataStructure));
             Assert.IsTrue(actual.Count == 2);
-            Assert.IsTrue(actual.Contains(typeof(DataStructure)));
-            Assert.IsTrue(actual.Contains(typeof(PropertyObject)));
+
+            Assert.IsTrue(actual.First().Item1 == typeof(DataStructure));
+            Assert.IsTrue(actual.First().Item2.Count == 0);
+
+            Assert.IsTrue(actual.Skip(1).Single().Item1 == typeof(PropertyObject));
+            Assert.IsTrue(actual.Skip(1).Single().Item2.Count == 1);
+            Assert.IsTrue(actual.Skip(1).Single().Item2.Single() is PropertyStackEntry);
+            Assert.IsTrue(((PropertyStackEntry)actual.Skip(1).Single().Item2.Single()).PropertyType == typeof(PropertyObject));
+            Assert.IsTrue(((PropertyStackEntry)actual.Skip(1).Single().Item2.Single()).PropertyName == "Property");
         }
 
         [TestMethod]

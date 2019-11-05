@@ -56,6 +56,8 @@ namespace Sid.Tools.StaticVisitor.Core
 
         private readonly StaticVisitorConfiguration configuration;
 
+        #region ctor List & out List
+
         public StaticVisitor(out System.Collections.Generic.ICollection<Type> list)
         {
             list = new System.Collections.Generic.List<Type>();
@@ -84,6 +86,26 @@ namespace Sid.Tools.StaticVisitor.Core
             this.configuration = configuration;
         }
 
+        #endregion
+        
+        #region ctor List with Stack
+
+        public StaticVisitor(System.Collections.Generic.ICollection<(Type type, System.Collections.Generic.Stack<StackEntry> stack)> list)
+        {
+            Action = (type, stack) => list.Add((type: type, stack: stack.Clone()));
+            configuration = new StaticVisitorConfiguration();
+        }
+
+        public StaticVisitor(System.Collections.Generic.ICollection<(Type type, System.Collections.Generic.Stack<StackEntry> stack)> list, StaticVisitorConfiguration configuration)
+        {
+            Action = (type, stack) => list.Add((type: type, stack: stack.Clone()));
+            this.configuration = configuration;
+        }
+
+        #endregion
+
+        #region ctor Action
+
         public StaticVisitor(Action<Type, System.Collections.Generic.Stack<StackEntry>> action)
         {
             Action = action;
@@ -95,6 +117,8 @@ namespace Sid.Tools.StaticVisitor.Core
             Action = action;
             this.configuration = configuration;
         }
+
+        #endregion
 
         public void Visit(Type type)
         {
