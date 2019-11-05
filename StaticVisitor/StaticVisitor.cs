@@ -50,28 +50,6 @@ namespace Sid.Tools.StaticVisitor.Core
         public bool VisitAssignableTypes { get; set; } = false;
     }
 
-    public abstract class StackEntry { }
-
-    public class InheritingTypeStackEntry : StackEntry
-    {
-
-    }
-    
-    public class EncompassedTypeStackEntry : StackEntry
-    {
-
-    }
-
-    public class AssignedTypeStackEntry : StackEntry
-    {
-
-    }
-    
-    public class PropertyStackEntry : StackEntry
-    {
-
-    }
-
     public class StaticVisitor
     {
         public Action<Type> Action { get; }
@@ -132,28 +110,29 @@ namespace Sid.Tools.StaticVisitor.Core
                 return;
 
             if (configuration.VisitInheritedTypes)
-                foreach (var inheritedType in type.GetInheritedTypes())
-                    VisitInternalWithStackWrapping(inheritedType, stack, visitedSet);
+                foreach (var (inheritedType, stackEntry) in type.GetInheritedTypes())
+                    VisitInternalWithStackWrapping(inheritedType, stack, visitedSet, stackEntry);
 
             if (configuration.VisitEncompassingTypes)
-                foreach (var encompassingType in type.GetEncompassingTypes())
-                    VisitInternalWithStackWrapping(encompassingType, stack, visitedSet);
+                foreach (var (encompassingType, stackEntry) in type.GetEncompassingTypes())
+                    VisitInternalWithStackWrapping(encompassingType, stack, visitedSet, stackEntry);
 
             Action(type);
 
             if (configuration.VisitAssignableTypes)
             {
                 var assignableTypes = type.GetAssignableTypes(AppDomain.CurrentDomain);
-                foreach (var assignableType in assignableTypes)
-                    VisitInternalWithStackWrapping(assignableType, stack, visitedSet);
+                foreach (var (assignableType, stackEntry) in assignableTypes)
+                    VisitInternalWithStackWrapping(assignableType, stack, visitedSet, stackEntry);
             }
 
-            foreach (var propertyType in
+            foreach (var (propertyType, stackEntry) in
                 type
                     .GetProperties()
                     .Where(x => configuration.PropertyCanBeVisited(x))
-                    .Select(x => x.PropertyType))
-                VisitInternalWithStackWrapping(propertyType, stack, visitedSet);
+                    .Select(x => (type: x.PropertyType, stackEntry: (StackEntry)new PropertyStackEntry(x.PropertyType, x.Name)))
+                )
+                    VisitInternalWithStackWrapping(propertyType, stack, visitedSet, stackEntry);
         }
 
         private void VisitInternalWithStackWrapping(
@@ -175,11 +154,11 @@ namespace Sid.Tools.StaticVisitor.Core
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static System.Collections.Generic.IEnumerable<Type>
+        public static System.Collections.Generic.IEnumerable<(Type type, StackEntry stackEntry)>
             GetInheritedTypes(this Type type)
         {
-            var baseType = type.BaseType.ToEnumerable();
-            var interfaces = type.GetInterfaces();
+            var baseType = type.BaseType.ToEnumerable().Select(x => (type: x, stackEntry: (StackEntry)new InheritingBaseTypeStackEntry(x)));
+            var interfaces = type.GetInterfaces().Select(x => (type: x, stackEntry: (StackEntry)new InheritingInterfaceStackEntry(x)));
             return baseType.Concat(interfaces);
         }
 
@@ -188,31 +167,32 @@ namespace Sid.Tools.StaticVisitor.Core
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static System.Collections.Generic.IEnumerable<Type>
+        public static System.Collections.Generic.IEnumerable<(Type type, StackEntry stackEntry)>
             GetEncompassingTypes(this Type type)
         {
             if (type == null)
-                return Enumerable.Empty<Type>();
+                return Enumerable.Empty<(Type type, StackEntry stackEntry)>();
 
             var parameterTypes = type.IsGenericType
-                ? type.GenericTypeArguments.Where(y => y != type)
-                : Enumerable.Empty<Type>();
+                ? type.GenericTypeArguments.Where(y => y != type).Select(y => (type: y, stackEntry: (StackEntry)new ParameterTypeStackEntry(y)))
+                : Enumerable.Empty<(Type type, StackEntry stackEntry)>();
 
             var elementType = type.HasElementType
-                ? type.GetElementType().ToEnumerable()
-                : Enumerable.Empty<Type>();
+                ? type.GetElementType().ToEnumerable().Select(y => (type: y, stackEntry: (StackEntry)new ElementTypeStackEntry(y)))
+                : Enumerable.Empty<(Type type, StackEntry stackEntry)>();
 
             return parameterTypes.Concat(elementType);
         }
 
-        public static System.Collections.Generic.IEnumerable<Type>
+        public static System.Collections.Generic.IEnumerable<(Type type, StackEntry stackEntry)>
             GetAssignableTypes(this Type type, AppDomain appDomain)
         {
             return appDomain
                 .GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(x => type != x)
-                .Where(type.IsAssignableFrom);
+                .Where(type.IsAssignableFrom)
+                .Select(y => (type: y, stackEntry: (StackEntry)new AssignedTypeStackEntry(y)));
         }
 
         public static System.Collections.Generic.IEnumerable<T> ToEnumerable<T>(this T item)
