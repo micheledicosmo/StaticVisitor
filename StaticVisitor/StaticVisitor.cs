@@ -52,53 +52,69 @@ namespace Sid.Tools.StaticVisitor.Core
 
     public class StaticVisitor
     {
-        public Action<Type, System.Collections.Generic.Stack<TypeVisit>> Action { get; }
+        public Action<System.Collections.Generic.Stack<TypeVisit>> Action { get; }
 
         private readonly StaticVisitorConfiguration configuration;
 
-        #region ctor List & out List
+        //#region ctor List & out List
 
-        public StaticVisitor(out System.Collections.Generic.ICollection<Type> list)
-        {
-            list = new System.Collections.Generic.List<Type>();
-            var listClosure = list;
-            Action = (type, stack) => listClosure.Add(type);
-            configuration = new StaticVisitorConfiguration();
-        }
+        //public StaticVisitor(out System.Collections.Generic.ICollection<Type> list)
+        //{
+        //    list = new System.Collections.Generic.List<Type>();
+        //    var listClosure = list;
+        //    Action = stack => listClosure.Add(stack.First().Type);
+        //    configuration = new StaticVisitorConfiguration();
+        //}
 
-        public StaticVisitor(out System.Collections.Generic.ICollection<Type> list, StaticVisitorConfiguration configuration)
-        {
-            list = new System.Collections.Generic.List<Type>();
-            var listClosure = list;
-            Action = (type, stack) => listClosure.Add(type);
-            this.configuration = configuration;
-        }
+        //public StaticVisitor(out System.Collections.Generic.ICollection<Type> list, StaticVisitorConfiguration configuration)
+        //{
+        //    list = new System.Collections.Generic.List<Type>();
+        //    var listClosure = list;
+        //    Action = stack => listClosure.Add(stack.First().Type);
+        //    this.configuration = configuration;
+        //}
 
-        public StaticVisitor(System.Collections.Generic.ICollection<Type> list)
-        {
-            Action = (type, stack) => list.Add(type);
-            configuration = new StaticVisitorConfiguration();
-        }
+        //public StaticVisitor(System.Collections.Generic.ICollection<Type> list)
+        //{
+        //    Action = stack => list.Add(stack.First().Type);
+        //    configuration = new StaticVisitorConfiguration();
+        //}
 
-        public StaticVisitor(System.Collections.Generic.ICollection<Type> list, StaticVisitorConfiguration configuration)
-        {
-            Action = (type, stack) => list.Add(type);
-            this.configuration = configuration;
-        }
+        //public StaticVisitor(System.Collections.Generic.ICollection<Type> list, StaticVisitorConfiguration configuration)
+        //{
+        //    Action = stack => list.Add(stack.First().Type);
+        //    this.configuration = configuration;
+        //}
 
-        #endregion
+        //#endregion
         
         #region ctor List with Stack
-
-        public StaticVisitor(System.Collections.Generic.ICollection<(Type type, System.Collections.Generic.Stack<TypeVisit> stack)> list)
+        
+        public StaticVisitor(out System.Collections.Generic.ICollection<System.Collections.Generic.Stack<TypeVisit>> visits)
         {
-            Action = (type, stack) => list.Add((type: type, stack: stack.Clone()));
+            visits = new System.Collections.Generic.List<System.Collections.Generic.Stack<TypeVisit>>();
+            var listClosure = visits;
+            Action = stack => listClosure.Add(stack.Clone());
             configuration = new StaticVisitorConfiguration();
         }
 
-        public StaticVisitor(System.Collections.Generic.ICollection<(Type type, System.Collections.Generic.Stack<TypeVisit> stack)> list, StaticVisitorConfiguration configuration)
+        public StaticVisitor(out System.Collections.Generic.ICollection<System.Collections.Generic.Stack<TypeVisit>> visits, StaticVisitorConfiguration configuration)
         {
-            Action = (type, stack) => list.Add((type: type, stack: stack.Clone()));
+            visits = new System.Collections.Generic.List<System.Collections.Generic.Stack<TypeVisit>>();
+            var listClosure = visits;
+            Action = stack => listClosure.Add(stack.Clone());
+            this.configuration = configuration;
+        }
+
+        public StaticVisitor(System.Collections.Generic.ICollection<System.Collections.Generic.Stack<TypeVisit>> visits)
+        {
+            Action = x => visits.Add(x.Clone());
+            configuration = new StaticVisitorConfiguration();
+        }
+
+        public StaticVisitor(System.Collections.Generic.ICollection<System.Collections.Generic.Stack<TypeVisit>> visits, StaticVisitorConfiguration configuration)
+        {
+            Action = x => visits.Add(x.Clone());
             this.configuration = configuration;
         }
 
@@ -106,13 +122,13 @@ namespace Sid.Tools.StaticVisitor.Core
 
         #region ctor Action
 
-        public StaticVisitor(Action<Type, System.Collections.Generic.Stack<TypeVisit>> action)
+        public StaticVisitor(Action<System.Collections.Generic.Stack<TypeVisit>> action)
         {
             Action = action;
             configuration = new StaticVisitorConfiguration();
         }
 
-        public StaticVisitor(Action<Type, System.Collections.Generic.Stack<TypeVisit>> action, StaticVisitorConfiguration configuration)
+        public StaticVisitor(Action<System.Collections.Generic.Stack<TypeVisit>> action, StaticVisitorConfiguration configuration)
         {
             Action = action;
             this.configuration = configuration;
@@ -130,8 +146,10 @@ namespace Sid.Tools.StaticVisitor.Core
                 );
         }
 
-        private void VisitInternal(Type type, System.Collections.Generic.Stack<TypeVisit> stack, System.Collections.Generic.ISet<Type> visitedSet)
+        private void VisitInternal(System.Collections.Generic.Stack<TypeVisit> stack, System.Collections.Generic.ISet<Type> visitedSet)
         {
+            var type = stack.CurrentType();
+
             if (configuration.AvoidMultipleVisits && visitedSet.Contains(type))
                 return;
             else
@@ -148,7 +166,7 @@ namespace Sid.Tools.StaticVisitor.Core
                 foreach (var (encompassingType, stackEntry) in type.GetEncompassingTypes())
                     VisitInternalWithStackWrapping(encompassingType, stack, visitedSet, stackEntry);
 
-            Action(type, stack);
+            Action(stack);
 
             if (configuration.VisitAssignableTypes)
             {
@@ -173,7 +191,7 @@ namespace Sid.Tools.StaticVisitor.Core
             TypeVisit typeVisit)
         {
             stack.Push(typeVisit);
-            VisitInternal(type, stack, visitedSet);
+            VisitInternal(stack, visitedSet);
             stack.Pop();
         }
     }
@@ -236,6 +254,22 @@ namespace Sid.Tools.StaticVisitor.Core
         public static System.Collections.Generic.Stack<T> Clone<T>(this System.Collections.Generic.Stack<T> stack)
         {
             return new System.Collections.Generic.Stack<T>(new System.Collections.Generic.Stack<T>(stack));
+        }
+        
+        /// <summary>
+        /// Sugar for accessing the first element of the stack
+        /// </summary>
+        public static TypeVisit CurrentVisit(this System.Collections.Generic.Stack<TypeVisit> stack)
+        {
+            return stack.First();
+        }
+
+        /// <summary>
+        /// Sugar for accessing the visited type in the first element of the stack
+        /// </summary>
+        public static Type CurrentType(this System.Collections.Generic.Stack<TypeVisit> stack)
+        {
+            return stack.CurrentVisit().Type;
         }
     }
 }
