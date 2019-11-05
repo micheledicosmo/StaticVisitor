@@ -50,6 +50,28 @@ namespace Sid.Tools.StaticVisitor.Core
         public bool VisitAssignableTypes { get; set; } = false;
     }
 
+    public abstract class StackEntry { }
+
+    public class InheritingTypeStackEntry : StackEntry
+    {
+
+    }
+    
+    public class EncompassedTypeStackEntry : StackEntry
+    {
+
+    }
+
+    public class AssignedTypeStackEntry : StackEntry
+    {
+
+    }
+    
+    public class PropertyStackEntry : StackEntry
+    {
+
+    }
+
     public class StaticVisitor
     {
         public Action<Type> Action { get; }
@@ -96,10 +118,10 @@ namespace Sid.Tools.StaticVisitor.Core
 
         public void Visit(Type type)
         {
-            VisitInternal(type, new System.Collections.Generic.HashSet<Type>());
+            VisitInternal(type, new System.Collections.Generic.Stack<StackEntry>(), new System.Collections.Generic.HashSet<Type>());
         }
 
-        private void VisitInternal(Type type, System.Collections.Generic.ISet<Type> visitedSet)
+        private void VisitInternal(Type type, System.Collections.Generic.Stack<StackEntry> stack, System.Collections.Generic.ISet<Type> visitedSet)
         {
             if (configuration.AvoidMultipleVisits && visitedSet.Contains(type))
                 return;
@@ -111,11 +133,11 @@ namespace Sid.Tools.StaticVisitor.Core
 
             if (configuration.VisitInheritedTypes)
                 foreach (var inheritedType in type.GetInheritedTypes())
-                    VisitInternal(inheritedType, visitedSet);
+                    VisitInternalWithStackWrapping(inheritedType, stack, visitedSet);
 
             if (configuration.VisitEncompassingTypes)
                 foreach (var encompassingType in type.GetEncompassingTypes())
-                    VisitInternal(encompassingType, visitedSet);
+                    VisitInternalWithStackWrapping(encompassingType, stack, visitedSet);
 
             Action(type);
 
@@ -123,7 +145,7 @@ namespace Sid.Tools.StaticVisitor.Core
             {
                 var assignableTypes = type.GetAssignableTypes(AppDomain.CurrentDomain);
                 foreach (var assignableType in assignableTypes)
-                    VisitInternal(assignableType, visitedSet);
+                    VisitInternalWithStackWrapping(assignableType, stack, visitedSet);
             }
 
             foreach (var propertyType in
@@ -131,7 +153,18 @@ namespace Sid.Tools.StaticVisitor.Core
                     .GetProperties()
                     .Where(x => configuration.PropertyCanBeVisited(x))
                     .Select(x => x.PropertyType))
-                VisitInternal(propertyType, visitedSet);
+                VisitInternalWithStackWrapping(propertyType, stack, visitedSet);
+        }
+
+        private void VisitInternalWithStackWrapping(
+            Type type,
+            System.Collections.Generic.Stack<StackEntry> stack,
+            System.Collections.Generic.ISet<Type> visitedSet,
+            StackEntry stackEntry)
+        {
+            stack.Push(stackEntry);
+            VisitInternal(type, stack, visitedSet);
+            stack.Pop();
         }
     }
 
