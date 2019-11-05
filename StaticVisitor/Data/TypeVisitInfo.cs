@@ -10,6 +10,11 @@ namespace Sid.Tools.StaticVisitor
         }
 
         public Type @Type { get; }
+
+        public override string ToString()
+        {
+            return $"[{@Type}]";
+        }
     }
     
     public class InitialTypeTypeVisit : TypeVisit
