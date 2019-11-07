@@ -8,7 +8,7 @@ The basic usage is to create an instance of `Sid.Tools.StaticVisitor.StaticVisit
 
 Overloads for more advanced behaviour also exist, where you specify a custom `Action<Stack<TypeVisit>>` which defines what custom action to execute upon visit.
 
-The easiest way to access the visited type in the returned list or upon invocation of the above Action, is via the `[Stack<TypeVisit>].CurrentType()` and `[Stack<TypeVisit>].CurrentVisit()` extension methods, but it is possible to observe the entire stack as well, allowing to understand why a type was visited, and how it was reached.
+The easiest way to access the visited type in the returned list or upon invocation of the above Action, is via the `[Stack<TypeVisit>].CurrentType()` or `[Stack<TypeVisit>].CurrentVisit()` extension methods, but it is possible to observe the entire stack as well, allowing to understand why a type was visited, and how it was reached.
 
 Note that not all types are visited by default: by default [primitive types](https://docs.microsoft.com/en-us/dotnet/api/system.type.isprimitive) and `object` are not visited; this behaviour can be customized (see below).
 
