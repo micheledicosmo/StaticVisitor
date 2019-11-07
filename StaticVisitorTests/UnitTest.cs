@@ -1,4 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Linq;
 
 namespace Sid.Tools.StaticVisitor.Tests
 {
@@ -13,7 +14,9 @@ namespace Sid.Tools.StaticVisitor.Tests
             var visitor = new StaticVisitor(out var actual);
             visitor.Visit(typeof(DataStructure));
             Assert.IsTrue(actual.Count == 1);
-            Assert.IsTrue(actual[0] == typeof(DataStructure));
+
+            Assert.IsTrue(actual[0].CurrentType() == typeof(DataStructure));
+            Assert.IsTrue(actual[0].CurrentVisit() is InitialTypeTypeVisit);
         }
 
         [TestMethod]
@@ -36,11 +39,13 @@ namespace Sid.Tools.StaticVisitor.Tests
         [TestMethod]
         public void CollectionCtorOk()
         {
-            var actual = new System.Collections.Generic.List<System.Type>();
+            var actual = new System.Collections.Generic.List<System.Collections.Generic.Stack<TypeVisit>>();
             var visitor = new StaticVisitor(actual);
             visitor.Visit(typeof(DataStructure));
             Assert.IsTrue(actual.Count == 1);
-            Assert.IsTrue(actual[0] == typeof(DataStructure));
+
+            Assert.IsTrue(actual[0].CurrentType() == typeof(DataStructure));
+            Assert.IsTrue(actual[0].CurrentVisit() is InitialTypeTypeVisit);
         }
 
         [TestMethod]
@@ -55,7 +60,7 @@ namespace Sid.Tools.StaticVisitor.Tests
                     return false;
                 }
             };
-            var actual = new System.Collections.Generic.List<System.Type>();
+            var actual = new System.Collections.Generic.List<System.Collections.Generic.Stack<TypeVisit>>();
             var visitor = new StaticVisitor(actual, configuration);
             visitor.Visit(typeof(DataStructure));
             Assert.IsTrue(configurationCalled);
@@ -64,11 +69,13 @@ namespace Sid.Tools.StaticVisitor.Tests
         [TestMethod]
         public void ActionCtorOk()
         {
-            var actual = new System.Collections.Generic.List<System.Type>();
-            var visitor = new StaticVisitor(x => actual.Add(x));
+            var actual = new System.Collections.Generic.List<System.Collections.Generic.Stack<TypeVisit>>();
+            var visitor = new StaticVisitor(stack => actual.Add(stack.Clone()));
             visitor.Visit(typeof(DataStructure));
             Assert.IsTrue(actual.Count == 1);
-            Assert.IsTrue(actual[0] == typeof(DataStructure));
+
+            Assert.IsTrue(actual[0].CurrentType() == typeof(DataStructure));
+            Assert.IsTrue(actual[0].CurrentVisit() is InitialTypeTypeVisit);
         }
 
         [TestMethod]
@@ -83,8 +90,8 @@ namespace Sid.Tools.StaticVisitor.Tests
                     return false;
                 }
             };
-            var actual = new System.Collections.Generic.List<System.Type>();
-            var visitor = new StaticVisitor(x => actual.Add(x), configuration);
+            var actual = new System.Collections.Generic.List<System.Collections.Generic.Stack<TypeVisit>>();
+            var visitor = new StaticVisitor(stack => actual.Add(stack.Clone()), configuration);
             visitor.Visit(typeof(DataStructure));
             Assert.IsTrue(configurationCalled);
         }
@@ -98,8 +105,12 @@ namespace Sid.Tools.StaticVisitor.Tests
             });
             visitor.Visit(typeof(DataStructure));
             Assert.IsTrue(actual.Count == 2);
-            Assert.IsTrue(actual[0] == typeof(DataStructure));
-            Assert.IsTrue(actual[1] == typeof(object));
+
+            Assert.IsTrue(actual[0].CurrentType() == typeof(DataStructure));
+            Assert.IsTrue(actual[0].CurrentVisit() is InitialTypeTypeVisit);
+
+            Assert.IsTrue(actual[1].CurrentType() == typeof(object));
+            Assert.IsTrue(actual[1].CurrentVisit() is InheritingBaseTypeTypeVisit);
         }
     }
 
@@ -116,11 +127,17 @@ namespace Sid.Tools.StaticVisitor.Tests
         [TestMethod]
         public void BasicOk()
         {
-            var visitor = new StaticVisitor(out var actual);
+            var actual = new System.Collections.Generic.List<System.Collections.Generic.Stack<TypeVisit>>();
+            var visitor = new StaticVisitor(actual);
             visitor.Visit(typeof(DataStructure));
             Assert.IsTrue(actual.Count == 2);
-            Assert.IsTrue(actual[0] == typeof(DataStructure));
-            Assert.IsTrue(actual[1] == typeof(PropertyObject));
+            
+            Assert.IsTrue(actual[0].CurrentType() == typeof(DataStructure));
+            Assert.IsTrue(actual[0].CurrentVisit() is InitialTypeTypeVisit);
+            
+            Assert.IsTrue(actual[1].CurrentType() == typeof(PropertyObject));
+            Assert.IsTrue(actual[1].CurrentVisit() is PropertyTypeVisit);
+            Assert.IsTrue(((PropertyTypeVisit)actual[1].CurrentVisit()).PropertyName == "Property");
         }
 
         [TestMethod]
@@ -132,7 +149,9 @@ namespace Sid.Tools.StaticVisitor.Tests
             });
             visitor.Visit(typeof(DataStructure));
             Assert.IsTrue(actual.Count == 1);
-            Assert.IsTrue(actual[0] == typeof(DataStructure));
+
+            Assert.IsTrue(actual[0].CurrentType() == typeof(DataStructure));
+            Assert.IsTrue(actual[0].CurrentVisit() is InitialTypeTypeVisit);
         }
     }
 
@@ -149,8 +168,12 @@ namespace Sid.Tools.StaticVisitor.Tests
             var visitor = new StaticVisitor(out var actual);
             visitor.Visit(typeof(DataStructureA));
             Assert.IsTrue(actual.Count == 2);
-            Assert.IsTrue(actual[0] == typeof(DataStructureA));
-            Assert.IsTrue(actual[1] == typeof(DataStructureB));
+
+            Assert.IsTrue(actual[0].CurrentType() == typeof(DataStructureA));
+            Assert.IsTrue(actual[0].CurrentVisit() is InitialTypeTypeVisit);
+
+            Assert.IsTrue(actual[1].CurrentType() == typeof(DataStructureB));
+            Assert.IsTrue(actual[1].CurrentVisit() is InheritingBaseTypeTypeVisit);
         }
 
         [TestMethod]
@@ -162,7 +185,9 @@ namespace Sid.Tools.StaticVisitor.Tests
             });
             visitor.Visit(typeof(DataStructureA));
             Assert.IsTrue(actual.Count == 1);
-            Assert.IsTrue(actual[0] == typeof(DataStructureA));
+
+            Assert.IsTrue(actual[0].CurrentType() == typeof(DataStructureA));
+            Assert.IsTrue(actual[0].CurrentVisit() is InitialTypeTypeVisit);
         }
     }
 
@@ -181,10 +206,19 @@ namespace Sid.Tools.StaticVisitor.Tests
             var visitor = new StaticVisitor(out var actual);
             visitor.Visit(typeof(DataStructure));
             Assert.IsTrue(actual.Count == 4);
-            Assert.IsTrue(actual[0] == typeof(DataStructure));
-            Assert.IsTrue(actual[1] == typeof(IInterface1));
-            Assert.IsTrue(actual[2] == typeof(IInterfaceBase));
-            Assert.IsTrue(actual[3] == typeof(IInterface2));
+
+            
+            Assert.IsTrue(actual[0].CurrentType() == typeof(DataStructure));
+            Assert.IsTrue(actual[0].CurrentVisit() is InitialTypeTypeVisit);
+            
+            Assert.IsTrue(actual[1].CurrentType() == typeof(IInterface1));
+            Assert.IsTrue(actual[1].CurrentVisit() is InheritingInterfaceTypeVisit);
+            
+            Assert.IsTrue(actual[2].CurrentType() == typeof(IInterfaceBase));
+            Assert.IsTrue(actual[2].CurrentVisit() is InheritingInterfaceTypeVisit);
+
+            Assert.IsTrue(actual[3].CurrentType() == typeof(IInterface2));
+            Assert.IsTrue(actual[3].CurrentVisit() is InheritingInterfaceTypeVisit);
         }
 
         [TestMethod]
@@ -196,12 +230,24 @@ namespace Sid.Tools.StaticVisitor.Tests
             });
             visitor.Visit(typeof(DataStructure));
             Assert.IsTrue(actual.Count == 6);
-            Assert.IsTrue(actual[0] == typeof(DataStructure));
-            Assert.IsTrue(actual[1] == typeof(IInterface1));
-            Assert.IsTrue(actual[2] == typeof(IInterfaceBase));
-            Assert.IsTrue(actual[3] == typeof(IInterfaceBase));
-            Assert.IsTrue(actual[4] == typeof(IInterface2));
-            Assert.IsTrue(actual[5] == typeof(IInterfaceBase));
+            
+            Assert.IsTrue(actual[0].CurrentType() == typeof(DataStructure));
+            Assert.IsTrue(actual[0].CurrentVisit() is InitialTypeTypeVisit);
+            
+            Assert.IsTrue(actual[1].CurrentType() == typeof(IInterface1));
+            Assert.IsTrue(actual[1].CurrentVisit() is InheritingInterfaceTypeVisit);
+            
+            Assert.IsTrue(actual[2].CurrentType() == typeof(IInterfaceBase));
+            Assert.IsTrue(actual[2].CurrentVisit() is InheritingInterfaceTypeVisit);
+            
+            Assert.IsTrue(actual[3].CurrentType() == typeof(IInterfaceBase));
+            Assert.IsTrue(actual[3].CurrentVisit() is InheritingInterfaceTypeVisit);
+            
+            Assert.IsTrue(actual[4].CurrentType() == typeof(IInterface2));
+            Assert.IsTrue(actual[4].CurrentVisit() is InheritingInterfaceTypeVisit);
+            
+            Assert.IsTrue(actual[5].CurrentType() == typeof(IInterfaceBase));
+            Assert.IsTrue(actual[5].CurrentVisit() is InheritingInterfaceTypeVisit);
         }
     }
 
@@ -215,16 +261,21 @@ namespace Sid.Tools.StaticVisitor.Tests
         private class EncompassedType { }
 
         [TestMethod]
-        public void GenericTypeOk()
+        public void ParameterTypeOk()
         {
             var visitor = new StaticVisitor(out var actual, new StaticVisitorConfiguration()
             {
                 VisitInheritedTypes = false
             });
             visitor.Visit(typeof(GenericType<EncompassedType>));
+            
             Assert.IsTrue(actual.Count == 2);
-            Assert.IsTrue(actual[0] == typeof(GenericType<EncompassedType>));
-            Assert.IsTrue(actual[1] == typeof(EncompassedType));
+            
+            Assert.IsTrue(actual[0].CurrentType() == typeof(GenericType<EncompassedType>));
+            Assert.IsTrue(actual[0].CurrentVisit() is InitialTypeTypeVisit);
+
+            Assert.IsTrue(actual[1].CurrentType() == typeof(EncompassedType));
+            Assert.IsTrue(actual[1].CurrentVisit() is ParameterTypeTypeVisit);
         }
 
         [TestMethod]
@@ -236,8 +287,13 @@ namespace Sid.Tools.StaticVisitor.Tests
             });
             visitor.Visit(typeof(EncompassedType[]));
             Assert.IsTrue(actual.Count == 2);
-            Assert.IsTrue(actual[0] == typeof(EncompassedType[]));
-            Assert.IsTrue(actual[1] == typeof(EncompassedType));
+            
+            Assert.IsTrue(actual[0].CurrentType() == typeof(EncompassedType[]));
+            Assert.IsTrue(actual[0].CurrentVisit() is InitialTypeTypeVisit);
+            
+            Assert.IsTrue(actual[1].CurrentType() == typeof(EncompassedType));
+            Assert.IsTrue(actual[1].CurrentVisit() is ElementTypeTypeVisit);
+
         }
 
         [TestMethod]
@@ -250,7 +306,9 @@ namespace Sid.Tools.StaticVisitor.Tests
             });
             visitor.Visit(typeof(EncompassedType[]));
             Assert.IsTrue(actual.Count == 1);
-            Assert.IsTrue(actual[0] == typeof(EncompassedType[]));
+            
+            Assert.IsTrue(actual[0].CurrentType() == typeof(EncompassedType[]));
+            Assert.IsTrue(actual[0].CurrentVisit() is InitialTypeTypeVisit);
         }
     }
 
@@ -270,8 +328,12 @@ namespace Sid.Tools.StaticVisitor.Tests
             });
             visitor.Visit(typeof(DataStructureA));
             Assert.IsTrue(actual.Count == 2);
-            Assert.IsTrue(actual[0] == typeof(DataStructureA));
-            Assert.IsTrue(actual[1] == typeof(DataStructureB));
+            
+            Assert.IsTrue(actual[0].CurrentType() == typeof(DataStructureA));
+            Assert.IsTrue(actual[0].CurrentVisit() is InitialTypeTypeVisit);
+
+            Assert.IsTrue(actual[1].CurrentType() == typeof(DataStructureB));
+            Assert.IsTrue(actual[1].CurrentVisit() is AssignableTypeTypeVisit);
         }
     }
 }

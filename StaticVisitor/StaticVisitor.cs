@@ -61,76 +61,84 @@ namespace Sid.Tools.StaticVisitor
     /// </summary>
     public class StaticVisitor
     {
-        private readonly Action<Type> Action;
+        private readonly Action<System.Collections.Generic.Stack<TypeVisit>> Action;
 
-        /// <summary>
-        /// Event raised when a tracing event occurs. Can be used for debugging purposes
-        /// </summary>
-        /// <example><code>visitor.Trace += (o, m) => System.Console.Out.WriteLine($"[VISITOR] {m}");</code></example>
-        public event EventHandler<string> Trace;
+        ///// <summary>
+        ///// Event raised when a tracing event occurs. Can be used for debugging purposes
+        ///// </summary>
+        ///// <example><code>visitor.Trace += (o, m) => System.Console.Out.WriteLine($"[VISITOR] {m}");</code></example>
+        //public event EventHandler<string> Trace;
 
-        /// <summary>
-        /// Raises the event <see cref="Trace"/>
-        /// </summary>
-        /// <param name="message">Tracing message</param>
-        /// <param name="stackLevel">0-based position in the stack</param>
-        protected virtual void OnTrace(string message, int stackLevel)
-        {
-            var handler = Trace;
-            handler?.Invoke(this, $"{string.Empty.PadLeft(stackLevel * 3)}{message}");
-        }
+        ///// <summary>
+        ///// Raises the event <see cref="Trace"/>
+        ///// </summary>
+        ///// <param name="message">Tracing message</param>
+        ///// <param name="stackLevel">0-based position in the stack</param>
+        //protected virtual void OnTrace(string message, int stackLevel)
+        //{
+        //    var handler = Trace;
+        //    handler?.Invoke(this, $"{string.Empty.PadLeft(stackLevel * 3)}{message}");
+        //}
 
         private readonly StaticVisitorConfiguration configuration;
 
+        #region ctor List with Stack
+        
         /// <summary>
         /// Creates a new instance of <see cref="StaticVisitor"/>
         /// </summary>
-        /// <param name="collection">The collection to which visited types will be added</param>
-        public StaticVisitor(out System.Collections.Generic.IList<Type> collection)
+        /// <param name="collection">The collection to which visit stacks will be added</param>
+        public StaticVisitor(out System.Collections.Generic.IList<System.Collections.Generic.Stack<TypeVisit>> visits)
         {
-            collection = new System.Collections.Generic.List<Type>();
-            Action = collection.Add;
+            visits = new System.Collections.Generic.List<System.Collections.Generic.Stack<TypeVisit>>();
+            var listClosure = visits;
+            Action = stack => listClosure.Add(stack.Clone());
             configuration = new StaticVisitorConfiguration();
         }
 
         /// <summary>
         /// Creates a new instance of <see cref="StaticVisitor"/>
         /// </summary>
-        /// <param name="collection">The collection to which visited types will be added. Use an ordered collection to preserve order of visit</param>
+        /// <param name="collection">The collection to which visit stacks will be added</param>
         /// <param name="configuration">The custom configuration which defines the visitor behaviour</param>
-        public StaticVisitor(out System.Collections.Generic.IList<Type> collection, StaticVisitorConfiguration configuration)
+        public StaticVisitor(out System.Collections.Generic.IList<System.Collections.Generic.Stack<TypeVisit>> visits, StaticVisitorConfiguration configuration)
         {
-            collection = new System.Collections.Generic.List<Type>();
-            Action = collection.Add;
+            visits = new System.Collections.Generic.List<System.Collections.Generic.Stack<TypeVisit>>();
+            var listClosure = visits;
+            Action = stack => listClosure.Add(stack.Clone());
             this.configuration = configuration;
         }
 
         /// <summary>
         /// Creates a new instance of <see cref="StaticVisitor"/>
         /// </summary>
-        /// <param name="collection">The collection to which visited types will be added. Use an ordered collection to preserve order of visit</param>
-        public StaticVisitor(System.Collections.Generic.ICollection<Type> collection)
+        /// <param name="collection">The collection to which visit stacks will be added. Use an ordered collection to preserve order of visit</param>
+        public StaticVisitor(System.Collections.Generic.ICollection<System.Collections.Generic.Stack<TypeVisit>> visits)
         {
-            Action = collection.Add;
+            Action = x => visits.Add(x.Clone());
             configuration = new StaticVisitorConfiguration();
         }
 
         /// <summary>
         /// Creates a new instance of <see cref="StaticVisitor"/>
         /// </summary>
-        /// <param name="collection">The collection to which visited types will be added</param>
+        /// <param name="collection">The collection to which visit stacks will be added. Use an ordered collection to preserve order of visit</param>
         /// <param name="configuration">The custom configuration which defines the visitor behaviour</param>
-        public StaticVisitor(System.Collections.Generic.ICollection<Type> collection, StaticVisitorConfiguration configuration)
+        public StaticVisitor(System.Collections.Generic.ICollection<System.Collections.Generic.Stack<TypeVisit>> visits, StaticVisitorConfiguration configuration)
         {
-            Action = collection.Add;
+            Action = x => visits.Add(x.Clone());
             this.configuration = configuration;
         }
 
+        #endregion
+
+        #region ctor Action
+            
         /// <summary>
         /// Creates a new instance of <see cref="StaticVisitor"/>
         /// </summary>
-        /// <param name="action">The action to be invoked when a type is visited</param>
-        public StaticVisitor(Action<Type> action)
+        /// <param name="action">The action to be invoked when a stack is visited</param>
+        public StaticVisitor(Action<System.Collections.Generic.Stack<TypeVisit>> action)
         {
             Action = action;
             configuration = new StaticVisitorConfiguration();
@@ -139,13 +147,15 @@ namespace Sid.Tools.StaticVisitor
         /// <summary>
         /// Creates a new instance of <see cref="StaticVisitor"/>
         /// </summary>
-        /// <param name="action">The action to be invoked when a type is visited</param>
+        /// <param name="action">The action to be invoked when a stack is visited</param>
         /// <param name="configuration">The custom configuration which defines the visitor behaviour</param>
-        public StaticVisitor(Action<Type> action, StaticVisitorConfiguration configuration)
+        public StaticVisitor(Action<System.Collections.Generic.Stack<TypeVisit>> action, StaticVisitorConfiguration configuration)
         {
             Action = action;
             this.configuration = configuration;
         }
+
+        #endregion
 
         /// <summary>
         /// Starts visiting the type
@@ -153,78 +163,62 @@ namespace Sid.Tools.StaticVisitor
         /// <param name="type"></param>
         public void Visit(Type type)
         {
-            VisitInternal(type, new System.Collections.Generic.HashSet<Type>(), -1);
+            VisitInternalWithStackWrapping(
+                type,
+                new System.Collections.Generic.Stack<TypeVisit>(),
+                new System.Collections.Generic.HashSet<Type>(),
+                new InitialTypeTypeVisit(type)
+                );
         }
 
-        private void VisitInternal(
-            Type type,
-            System.Collections.Generic.ISet<Type> visitedSet,
-            int stackLevel)
+        private void VisitInternal(System.Collections.Generic.Stack<TypeVisit> stack, System.Collections.Generic.ISet<Type> visitedSet)
         {
-            stackLevel++;
+            var type = stack.CurrentType();
+
             if (configuration.AvoidMultipleVisits && visitedSet.Contains(type))
-            {
-                OnTrace($"{type} visit avoided as type already visited.", stackLevel);
-                stackLevel--;
                 return;
-            }
             else
                 visitedSet.Add(type);
 
             if (!configuration.TypeCanBeVisited(type))
-            {
-                OnTrace($"{type} cannot be visited as per current configuration.", stackLevel);
-                stackLevel--;
                 return;
-            }
-
-            Action(type);
+            
+            Action(stack);
 
             if (configuration.VisitInheritedTypes)
-            {
-                OnTrace($"Iterating through {type} inherited types now...", stackLevel);
-                foreach (var inheritedType in type.GetInheritedTypes())
-                {
-                    OnTrace($">Recursing over {inheritedType}", stackLevel);
-                    VisitInternal(inheritedType, visitedSet, stackLevel);
-                }
-            }
+                foreach (var (inheritedType, stackEntry) in type.GetInheritedTypes())
+                    VisitInternalWithStackWrapping(inheritedType, stack, visitedSet, stackEntry);
 
             if (configuration.VisitEncompassingTypes)
-            {
-                OnTrace($"Iterating through {type} encompassing types now...", stackLevel);
-                foreach (var encompassingType in type.GetEncompassingTypes())
-                {
-                    OnTrace($">Recursing over {encompassingType}", stackLevel);
-                    VisitInternal(encompassingType, visitedSet, stackLevel);
-                }
-            }
+                foreach (var (encompassingType, stackEntry) in type.GetEncompassingTypes())
+                    VisitInternalWithStackWrapping(encompassingType, stack, visitedSet, stackEntry);
+
 
             if (configuration.VisitAssignableTypesOf(type))
             {
-                OnTrace($"Iterating through {type} assignable types now...", stackLevel);
                 var assignableTypes = type.GetAssignableTypes(AppDomain.CurrentDomain);
-                foreach (var assignableType in assignableTypes)
-                {
-                    OnTrace($">Recursing over {assignableType}", stackLevel);
-                    VisitInternal(assignableType, visitedSet, stackLevel);
-                }
-            }
-            else
-            {
-                OnTrace($"{type} assignable types cannot be visited as per current configuration.", stackLevel);
+                foreach (var (assignableType, stackEntry) in assignableTypes)
+                    VisitInternalWithStackWrapping(assignableType, stack, visitedSet, stackEntry);
             }
 
-            OnTrace($"Iterating through {type} properties' type now...", stackLevel);
-            foreach (var propertyType in
+            foreach (var (propertyType, stackEntry) in
                 type
                     .GetProperties()
                     .Where(x => configuration.PropertyCanBeVisited(x))
-                    .Select(x => x.PropertyType))
-            {
-                OnTrace($">Recursing over {propertyType}", stackLevel);
-                VisitInternal(propertyType, visitedSet, stackLevel);
-            }
+                    .Select(x => (type: x.PropertyType, stackEntry: (TypeVisit)new PropertyTypeVisit(x.PropertyType, x.Name)))
+                )
+                    VisitInternalWithStackWrapping(propertyType, stack, visitedSet, stackEntry);
+        }
+
+        private void VisitInternalWithStackWrapping(
+            Type type,
+            System.Collections.Generic.Stack<TypeVisit> stack,
+            System.Collections.Generic.ISet<Type> visitedSet,
+            TypeVisit typeVisit)
+        {
+            stack.Push(typeVisit);
+            VisitInternal(stack, visitedSet);
+            stack.Pop();
         }
     }
 
@@ -235,11 +229,11 @@ namespace Sid.Tools.StaticVisitor
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static System.Collections.Generic.IEnumerable<Type>
+        public static System.Collections.Generic.IEnumerable<(Type type, TypeVisit stackEntry)>
             GetInheritedTypes(this Type type)
         {
-            var baseType = type.BaseType.ToEnumerable();
-            var interfaces = type.GetInterfaces();
+            var baseType = type.BaseType.ToEnumerable().Select(x => (type: x, stackEntry: (TypeVisit)new InheritingBaseTypeTypeVisit(x)));
+            var interfaces = type.GetInterfaces().Select(x => (type: x, stackEntry: (TypeVisit)new InheritingInterfaceTypeVisit(x)));
             return baseType.Concat(interfaces);
         }
 
@@ -248,35 +242,36 @@ namespace Sid.Tools.StaticVisitor
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static System.Collections.Generic.IEnumerable<Type>
+        public static System.Collections.Generic.IEnumerable<(Type type, TypeVisit stackEntry)>
             GetEncompassingTypes(this Type type)
         {
             if (type == null)
-                return Enumerable.Empty<Type>();
+                return Enumerable.Empty<(Type type, TypeVisit stackEntry)>();
 
             var parameterTypes = type.IsGenericType
-                ? type.GenericTypeArguments.Where(y => y != type)
-                : Enumerable.Empty<Type>();
+                ? type.GenericTypeArguments.Where(y => y != type).Select(y => (type: y, stackEntry: (TypeVisit)new ParameterTypeTypeVisit(y)))
+                : Enumerable.Empty<(Type type, TypeVisit stackEntry)>();
 
             var elementType = type.HasElementType
-                ? type.GetElementType().ToEnumerable()
-                : Enumerable.Empty<Type>();
+                ? type.GetElementType().ToEnumerable().Select(y => (type: y, stackEntry: (TypeVisit)new ElementTypeTypeVisit(y)))
+                : Enumerable.Empty<(Type type, TypeVisit stackEntry)>();
 
             return parameterTypes.Concat(elementType);
         }
 
-        public static System.Collections.Generic.IEnumerable<Type>
+        public static System.Collections.Generic.IEnumerable<(Type type, TypeVisit stackEntry)>
             GetAssignableTypes(this Type type, AppDomain appDomain)
         {
             return appDomain
                 .GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(x => type != x)
-                .Where(type.IsAssignableFrom);
+                .Where(type.IsAssignableFrom)
+                .Select(y => (type: y, stackEntry: (TypeVisit)new AssignableTypeTypeVisit(y)));
         }
 
         /// <summary>
-        /// Wrapes <paramref name="item"/> in an <see cref="System.Collections.Generic.IEnumerable<typeparamref name="T"/>"/>
+        /// Wraps <paramref name="item"/> in an <see cref="System.Collections.Generic.IEnumerable<typeparamref name="T"/>"/>
         /// </summary>
         /// <typeparam name="T">The type of the item to be wrapped</typeparam>
         /// <param name="item">The item to be wrapped</param>
@@ -286,6 +281,27 @@ namespace Sid.Tools.StaticVisitor
             if (item == null)
                 yield break;
             yield return item;
+        }
+
+        public static System.Collections.Generic.Stack<T> Clone<T>(this System.Collections.Generic.Stack<T> stack)
+        {
+            return new System.Collections.Generic.Stack<T>(new System.Collections.Generic.Stack<T>(stack));
+        }
+        
+        /// <summary>
+        /// Sugar for accessing the first element of the stack
+        /// </summary>
+        public static TypeVisit CurrentVisit(this System.Collections.Generic.Stack<TypeVisit> stack)
+        {
+            return stack.First();
+        }
+
+        /// <summary>
+        /// Sugar for accessing the visited type in the first element of the stack
+        /// </summary>
+        public static Type CurrentType(this System.Collections.Generic.Stack<TypeVisit> stack)
+        {
+            return stack.CurrentVisit().Type;
         }
     }
 }
