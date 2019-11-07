@@ -26,6 +26,11 @@ namespace Sid.Tools.StaticVisitor
     public class InitialTypeTypeVisit : TypeVisit
     {
         public InitialTypeTypeVisit(Type initialType): base(initialType) {}
+        
+        public override string ToString()
+        {
+            return $"{base.ToString()} (initial)";
+        }
     }
 
     /// <summary>
@@ -42,6 +47,11 @@ namespace Sid.Tools.StaticVisitor
     public class InheritingBaseTypeTypeVisit : InheritingTypeTypeVisit
     {
         public InheritingBaseTypeTypeVisit(Type baseType): base(baseType){}
+        
+        public override string ToString()
+        {
+            return $"{base.ToString()} (base type)";
+        }
     }
     
     /// <summary>
@@ -50,6 +60,11 @@ namespace Sid.Tools.StaticVisitor
     public class InheritingInterfaceTypeVisit : InheritingTypeTypeVisit
     {
         public InheritingInterfaceTypeVisit(Type @interface): base(@interface){}
+        
+        public override string ToString()
+        {
+            return $"{base.ToString()} (implemented)";
+        }
     }
 
     /// <summary>
@@ -58,6 +73,11 @@ namespace Sid.Tools.StaticVisitor
     public abstract class EncompassedTypeTypeVisit : TypeVisit
     {
         protected EncompassedTypeTypeVisit(Type encompassedType): base(encompassedType) {}
+        
+        public override string ToString()
+        {
+            return $"{base.ToString()} (encompassed)";
+        }
     }
     
     /// <summary>
@@ -66,6 +86,11 @@ namespace Sid.Tools.StaticVisitor
     public class ParameterTypeTypeVisit : EncompassedTypeTypeVisit
     {
         public ParameterTypeTypeVisit(Type parameterType): base(parameterType) {}
+        
+        public override string ToString()
+        {
+            return $"{base.ToString()} (parameter type)";
+        }
     }
     
     /// <summary>
@@ -74,6 +99,11 @@ namespace Sid.Tools.StaticVisitor
     public class ElementTypeTypeVisit : EncompassedTypeTypeVisit
     {
         public ElementTypeTypeVisit(Type elementType): base(elementType) {}
+        
+        public override string ToString()
+        {
+            return $"{base.ToString()} (element type)";
+        }
     }
     
     /// <summary>
@@ -82,6 +112,11 @@ namespace Sid.Tools.StaticVisitor
     public class AssignableTypeTypeVisit : TypeVisit
     {
         public AssignableTypeTypeVisit(Type assignableType): base(assignableType) {}
+        
+        public override string ToString()
+        {
+            return $"{base.ToString()} (assignable)";
+        }
     }
     
     /// <summary>
@@ -95,5 +130,10 @@ namespace Sid.Tools.StaticVisitor
         }
 
         public string PropertyName { get; }
+        
+        public override string ToString()
+        {
+            return $"{base.ToString()} (property)";
+        }
     }
 }
