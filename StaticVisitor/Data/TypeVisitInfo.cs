@@ -73,11 +73,6 @@ namespace Sid.Tools.StaticVisitor
     public abstract class EncompassedTypeTypeVisit : TypeVisit
     {
         protected EncompassedTypeTypeVisit(Type encompassedType): base(encompassedType) {}
-        
-        public override string ToString()
-        {
-            return $"{base.ToString()} (encompassed)";
-        }
     }
     
     /// <summary>
