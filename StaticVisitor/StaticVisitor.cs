@@ -63,23 +63,6 @@ namespace Sid.Tools.StaticVisitor
     {
         private readonly Action<System.Collections.Generic.Stack<TypeVisit>> Action;
 
-        ///// <summary>
-        ///// Event raised when a tracing event occurs. Can be used for debugging purposes
-        ///// </summary>
-        ///// <example><code>visitor.Trace += (o, m) => System.Console.Out.WriteLine($"[VISITOR] {m}");</code></example>
-        //public event EventHandler<string> Trace;
-
-        ///// <summary>
-        ///// Raises the event <see cref="Trace"/>
-        ///// </summary>
-        ///// <param name="message">Tracing message</param>
-        ///// <param name="stackLevel">0-based position in the stack</param>
-        //protected virtual void OnTrace(string message, int stackLevel)
-        //{
-        //    var handler = Trace;
-        //    handler?.Invoke(this, $"{string.Empty.PadLeft(stackLevel * 3)}{message}");
-        //}
-
         private readonly StaticVisitorConfiguration configuration;
 
         #region ctor List with Stack
